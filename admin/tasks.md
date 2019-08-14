@@ -1,11 +1,13 @@
 # COMP1110 Assignment 2 Group Tasks
 
+Weekly meeting time: Tuesdays, 2pm at the Marie Reay Teaching Centre
+
 For each task or sub-task, record who is responsible, the deadline, and any dependencies.
 Use the entries below as an example.
 
 ## Week 4
 
-Everyone: create application skeleton - meeting 14:00 17 Aug
+Everyone: create application skeleton - meeting 14:00 20th August
 
 ## Week 5
 

@@ -1,5 +1,8 @@
 package comp1110.ass2;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -23,8 +26,27 @@ public class FocusGame {
      * @return True if the piece placement is well-formed
      */
     static boolean isPiecePlacementWellFormed(String piecePlacement) {
+        if (piecePlacement.length() != 4) {
+            return false;
+        }
+        char s = piecePlacement.charAt(0);
+        if (!Character.toString(s).matches("^[a-j]")) {
+            return false;
+        }
+        char c = piecePlacement.charAt(1);
+        if (!Character.toString(c).matches("^[0-8]")) {
+            return false;
+        }
+        char r = piecePlacement.charAt(2);
+        if (!Character.toString(r).matches("^[0-4]")) {
+            return false;
+        }
+        char o = piecePlacement.charAt(3);
+        if (!Character.toString(o).matches("^[0-3]")) {
+            return false;
+        }
+        return true;
         // FIXME Task 2: determine whether a piece placement is well-formed
-        return false;
     }
 
     /**
@@ -37,10 +59,16 @@ public class FocusGame {
      * @return True if the placement is well-formed
      */
     public static boolean isPlacementStringWellFormed(String placement) {
-        // FIXME Task 3: determine whether a placement is well-formed
+        if (placement.length() % 4 == 0 && placement.length() >= 4 && placement.length() <= 40) {
+            String[] placements = placement.split("(?<=\\G.{" + 4 + "})");
+            for (int i = 0; i < placements.length; i++)
+                if (!isPiecePlacementWellFormed(placements[i])) {
+                    return false;
+                }
+            return true;
+        }
         return false;
     }
-
     /**
      * Determine whether a placement string is valid.
      *

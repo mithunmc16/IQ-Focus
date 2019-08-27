@@ -57,18 +57,18 @@ public class Viewer extends Application {
         validPlacement = FocusGame.isPlacementStringWellFormed(placement);
         if (validPlacement) {
             pieces.getChildren().clear();
-            n = placement.length() / 3;
+            n = placement.length() / 5;
             for (int i = 0; i < n; i++) {
-                indexStart = i * 3;
+                indexStart = i * 5;
                 piecePlacement = placement.substring(indexStart, indexStart + 3);
                 arrPiece.add(new ImageView(Viewer.class.getResource(URI_BASE + piecePlacement.charAt(1) + ".png").toString()));
 
                 if (piecePlacement.charAt(1) == 'a')
                     orientation = piecePlacement.charAt(2) - 'A';
                 else {
-                    if (piecePlacement.charAt(2) >= 'g') {
+                    if (piecePlacement.charAt(2) >= 'k') {
                         arrPiece.get(i).setScaleY(-1);
-                        orientation = piecePlacement.charAt(2) - 'g';
+                        orientation = piecePlacement.charAt(2) - 'k';
 
                     } else {
                         orientation = piecePlacement.charAt(2) - 'a';
@@ -85,20 +85,10 @@ public class Viewer extends Application {
                 if (position >= 0 && position <= 5) {
                     row = 0;
                     col = (position) * SQUARE_SIZE;
-                } else if (position >= 6 && position <= 11) {
-                    row = ROW_HEIGHT;
-                    col = (position - 6) * SQUARE_SIZE + (SQUARE_SIZE / 2);
-
-                } else if (position >= 12 && position <= 17) {
-                    row = 2 * ROW_HEIGHT;
-                    col = (position - 12) * SQUARE_SIZE;
-                } else if (position >= 18 && position <= 23) {
-                    row = 3 * ROW_HEIGHT;
-                    col = (position - 18) * SQUARE_SIZE + (SQUARE_SIZE / 2);
-
                 }
-                arrPiece.get(i).setLayoutX(col - 50);
-                arrPiece.get(i).setLayoutY(row - 50);
+                }
+                //arrPiece.get(i).setLayoutX(col - );
+                //arrPiece.get(i).setLayoutY(row - );
             }
             pieces.getChildren().addAll(arrPiece);
             // FIXME Task 4: implement the simple placement viewer

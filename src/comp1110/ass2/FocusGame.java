@@ -61,14 +61,22 @@ public class FocusGame {
     public static boolean isPlacementStringWellFormed(String placement) {
         if (placement.length() % 4 == 0 && placement.length() >= 4 && placement.length() <= 40) {
             String[] placements = placement.split("(?<=\\G.{" + 4 + "})");
-            for (int i = 0; i < placements.length; i++)
+            for (int i = 0; i < placements.length; i++) {
                 if (!isPiecePlacementWellFormed(placements[i])) {
                     return false;
                 }
+                for (int j = i + 1; j < placements.length; j++) {
+                    if (placements[i].substring(0, 1).equals(placements[j].substring(0, 1))) {
+                        return false;
+                    }
+                }
+            }
             return true;
         }
         return false;
     }
+
+
     /**
      * Determine whether a placement string is valid.
      *

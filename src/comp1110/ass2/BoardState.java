@@ -6,6 +6,5 @@ public class BoardState {
 
     //methods
     public State[][] updateBoardState() {
-
-    }
+        return null;}
 }

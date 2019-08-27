@@ -7,11 +7,11 @@ public class Shape {
 
     // methods
     public Location placementToLocation(String placement){
-
+        return null;
     }
 
     public Orientation placementToOrientation (String placement){
-
+        return null;
     }
 
 }

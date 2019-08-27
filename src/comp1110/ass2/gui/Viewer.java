@@ -28,11 +28,16 @@ public class Viewer extends Application {
     /* board layout */
     private static final int SQUARE_SIZE = 60;
     private static final int VIEWER_WIDTH = 720;
+    //
+    public static final int PIECE_IMAGE_SIZE = 3*SQUARE_SIZE;
+    //
+    private static final double ROW_HEIGHT = SQUARE_SIZE ;// rotate 90 degree
     private static final int VIEWER_HEIGHT = 480;
 
     private static final String URI_BASE = "assets/";
 
     private final Group root = new Group();
+    private final Group pieces = new Group(); // new group for pieces
     private final Group controls = new Group();
     private TextField textField;
 
@@ -50,11 +55,54 @@ public class Viewer extends Application {
         String piecePlacement;
         ArrayList<ImageView> arrPiece = new ArrayList<>();
         validPlacement = FocusGame.isPlacementStringWellFormed(placement);
-        if(validPlacement){
-            //getChildren; dont know if I have to create a new group for pieces.
-        }
+        if (validPlacement) {
+            pieces.getChildren().clear();
+            n = placement.length() / 3;
+            for (int i = 0; i < n; i++) {
+                indexStart = i * 3;
+                piecePlacement = placement.substring(indexStart, indexStart + 3);
+                arrPiece.add(new ImageView(Viewer.class.getResource(URI_BASE + piecePlacement.charAt(1) + ".png").toString()));
 
-        // FIXME Task 4: implement the simple placement viewer
+                if (piecePlacement.charAt(1) == 'a')
+                    orientation = piecePlacement.charAt(2) - 'A';
+                else {
+                    if (piecePlacement.charAt(2) >= 'g') {
+                        arrPiece.get(i).setScaleY(-1);
+                        orientation = piecePlacement.charAt(2) - 'g';
+
+                    } else {
+                        orientation = piecePlacement.charAt(2) - 'a';
+
+                    }
+                }
+                arrPiece.get(i).setRotate(90 * orientation);
+                arrPiece.get(i).setFitHeight(PIECE_IMAGE_SIZE);
+                arrPiece.get(i).setFitWidth(PIECE_IMAGE_SIZE);
+
+                position = piecePlacement.charAt(0) - 'a';
+                double row = -1;
+                double col = -1;
+                if (position >= 0 && position <= 5) {
+                    row = 0;
+                    col = (position) * SQUARE_SIZE;
+                } else if (position >= 6 && position <= 11) {
+                    row = ROW_HEIGHT;
+                    col = (position - 6) * SQUARE_SIZE + (SQUARE_SIZE / 2);
+
+                } else if (position >= 12 && position <= 17) {
+                    row = 2 * ROW_HEIGHT;
+                    col = (position - 12) * SQUARE_SIZE;
+                } else if (position >= 18 && position <= 23) {
+                    row = 3 * ROW_HEIGHT;
+                    col = (position - 18) * SQUARE_SIZE + (SQUARE_SIZE / 2);
+
+                }
+                arrPiece.get(i).setLayoutX(col - 50);
+                arrPiece.get(i).setLayoutY(row - 50);
+            }
+            pieces.getChildren().addAll(arrPiece);
+            // FIXME Task 4: implement the simple placement viewer
+        }
     }
 
     /**

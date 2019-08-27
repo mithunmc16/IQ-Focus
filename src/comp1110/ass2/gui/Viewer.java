@@ -10,6 +10,11 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.paint.Color;
+import comp1110.ass2.FocusGame;
+import java.util.ArrayList;
+import javafx.scene.image.ImageView;
 
 /**
  * A very simple viewer for piece placements in the IQ-Focus game.
@@ -37,6 +42,18 @@ public class Viewer extends Application {
      * @param placement A valid placement string
      */
     void makePlacement(String placement) {
+        boolean validPlacement;
+        int n = 0;  //number of pieces contained within placement string
+        int orientation;
+        int position;
+        int indexStart;
+        String piecePlacement;
+        ArrayList<ImageView> arrPiece = new ArrayList<>();
+        validPlacement = FocusGame.isPlacementStringWellFormed(placement);
+        if(validPlacement){
+            //getChildren; dont know if I have to create a new group for pieces.
+        }
+
         // FIXME Task 4: implement the simple placement viewer
     }
 

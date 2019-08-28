@@ -91,7 +91,7 @@ public class Viewer extends Application {
        // validPlacement = FocusGame.isPlacementStringWellFormed(placement);
             // FIXME Task 4: implement the simple placement viewer
         }
-    }
+    
 
     /**
      * Create a basic text field for input and a refresh button.

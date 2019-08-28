@@ -1,5 +1,6 @@
 package comp1110.ass2.gui;
 
+import com.sun.glass.ui.View;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -8,6 +9,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import javafx.scene.shape.Rectangle;
@@ -47,50 +49,46 @@ public class Viewer extends Application {
      * @param placement A valid placement string
      */
     void makePlacement(String placement) {
+        Scene scene = new Scene(new Group());
         boolean validPlacement;
         int n = 0;  //number of pieces contained within placement string
-        int orientation;
+        char orientation = placement.charAt(3);
         int position;
         int indexStart;
+        char tile = placement.charAt(0);
         String piecePlacement;
         ArrayList<ImageView> arrPiece = new ArrayList<>();
-        validPlacement = FocusGame.isPlacementStringWellFormed(placement);
-        if (validPlacement) {
-            pieces.getChildren().clear();
-            n = placement.length() / 5;
-            for (int i = 0; i < n; i++) {
-                indexStart = i * 5;
-                piecePlacement = placement.substring(indexStart, indexStart + 3);
-                arrPiece.add(new ImageView(Viewer.class.getResource(URI_BASE + piecePlacement.charAt(1) + ".png").toString()));
+        Image img = new Image(Viewer.class.getResource(URI_BASE + tile + ".png").toString());
 
-                if (piecePlacement.charAt(1) == 'a')
-                    orientation = piecePlacement.charAt(2) - 'A';
-                else {
-                    if (piecePlacement.charAt(2) >= 'k') {
-                        arrPiece.get(i).setScaleY(-1);
-                        orientation = piecePlacement.charAt(2) - 'k';
 
-                    } else {
-                        orientation = piecePlacement.charAt(2) - 'a';
 
-                    }
-                }
-                arrPiece.get(i).setRotate(90 * orientation);
-                arrPiece.get(i).setFitHeight(PIECE_IMAGE_SIZE);
-                arrPiece.get(i).setFitWidth(PIECE_IMAGE_SIZE);
 
-                position = piecePlacement.charAt(0) - 'a';
-                double row = -1;
-                double col = -1;
-                if (position >= 0 && position <= 5) {
-                    row = 0;
-                    col = (position) * SQUARE_SIZE;
-                }
-                }
-                //arrPiece.get(i).setLayoutX(col - );
-                //arrPiece.get(i).setLayoutY(row - );
-            }
-            pieces.getChildren().addAll(arrPiece);
+        switch (orientation){
+            case '0':
+
+                pieces.getChildren().clear();
+                ImageView i1 = new ImageView(img);
+                i1.setRotate(0);
+                root.getChildren().addAll(i1);
+                Stage stage = new Stage();
+                scene.setRoot(root);
+                stage.setScene(scene);
+                stage.show();
+                break;
+            case'1':
+
+                pieces.getChildren().clear();
+                ImageView i2 = new ImageView(img);
+                i2.setRotate(90);
+                root.getChildren().addAll(i2);
+                Stage stage1 = new Stage();
+
+                stage1.setScene(scene);
+                stage1.show();
+                break;
+
+
+       // validPlacement = FocusGame.isPlacementStringWellFormed(placement);
             // FIXME Task 4: implement the simple placement viewer
         }
     }

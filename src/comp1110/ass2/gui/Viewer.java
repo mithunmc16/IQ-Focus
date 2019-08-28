@@ -93,7 +93,7 @@ public class Viewer extends Application {
             pieces.getChildren().addAll(arrPiece);
             // FIXME Task 4: implement the simple placement viewer
         }
-    }
+    
 
     /**
      * Create a basic text field for input and a refresh button.

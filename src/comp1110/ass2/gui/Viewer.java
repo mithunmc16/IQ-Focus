@@ -61,12 +61,9 @@ public class Viewer extends Application {
         Image img = new Image(Viewer.class.getResource(URI_BASE + tile + ".png").toString());
 
 
-
-
-        switch (orientation){
+        switch (orientation) {
             case '0':
 
-                pieces.getChildren().clear();
                 ImageView i1 = new ImageView(img);
                 i1.setRotate(0);
                 root.getChildren().addAll(i1);
@@ -75,22 +72,41 @@ public class Viewer extends Application {
                 stage.setScene(scene);
                 stage.show();
                 break;
-            case'1':
 
-                pieces.getChildren().clear();
+            case '1':
+
                 ImageView i2 = new ImageView(img);
                 i2.setRotate(90);
                 root.getChildren().addAll(i2);
                 Stage stage1 = new Stage();
-
                 stage1.setScene(scene);
                 stage1.show();
                 break;
+            case '2':
+
+                ImageView i3 = new ImageView(img);
+                i3.setRotate(180);
+                root.getChildren().addAll(i3);
+                Stage stage2 = new Stage();
+                stage2.setScene(scene);
+                stage2.show();
+                break;
+
+            case '3':
+
+                ImageView i4 = new ImageView(img);
+                i4.setRotate(270);
+                root.getChildren().addAll(i4);
+                Stage stage3 = new Stage();
+                stage3.setScene(scene);
+                stage3.show();
+                break;
 
 
-       // validPlacement = FocusGame.isPlacementStringWellFormed(placement);
+            // validPlacement = FocusGame.isPlacementStringWellFormed(placement);
             // FIXME Task 4: implement the simple placement viewer
         }
+    }
     
 
     /**

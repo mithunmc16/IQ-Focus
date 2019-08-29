@@ -63,7 +63,7 @@ public class Viewer extends Application {
 
 
 
-        switch (orientation){
+        switch (orientation) {
             case '0':
 
                 pieces.getChildren().clear();
@@ -75,7 +75,7 @@ public class Viewer extends Application {
                 stage.setScene(scene);
                 stage.show();
                 break;
-            case'1':
+            case '1':
 
                 pieces.getChildren().clear();
                 ImageView i2 = new ImageView(img);
@@ -86,7 +86,7 @@ public class Viewer extends Application {
                 stage1.setScene(scene);
                 stage1.show();
                 break;
-
+        }
 
        // validPlacement = FocusGame.isPlacementStringWellFormed(placement);
             // FIXME Task 4: implement the simple placement viewer

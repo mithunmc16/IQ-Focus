@@ -31,9 +31,9 @@ declaration: >-
 # Add as many "url+licence+comment" entries as necessary
 # (or remove it altogether if you haven't used any external code)
 #code:
-#- comment:
-#   url:
-#    licence:
+- comment: The code in BoardState for function shapesAsList was taken from stackoverflow and converts a 2d array into a list
+   url: https://stackoverflow.com/questions/11447780/convert-two-dimensional-array-to-list-in-java
+   licence: CC BY-SA 2.5
 
 # Use this to list any assets (artwork, sound, etc) that you used.
 # Provide a comment explaining your use of that asset and the URL

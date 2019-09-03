@@ -22,6 +22,10 @@ public class Shape {
         return location;
     }
 
+    public String toString(){
+        return this.shape +Integer.toString(this.location.getX())+Integer.toString(this.location.getY())+this.orientation;
+    }
+
     /**
      * placementToLocation decodes the shape's location based on the placement string.
      */
@@ -51,5 +55,6 @@ public class Shape {
                 return NORTH;
         }
     }
+
 
 }

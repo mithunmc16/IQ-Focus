@@ -1,11 +1,9 @@
 package comp1110.ass2;
 
-import comp1110.ass2.gui.Board;
 import static comp1110.ass2.BoardState.*;
 
 import java.util.*;
 
-import static comp1110.ass2.BoardState.*;
 
 /**
  * This class provides the text interface for the IQ Focus Game

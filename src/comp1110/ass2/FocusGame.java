@@ -1,9 +1,11 @@
 package comp1110.ass2;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+import comp1110.ass2.gui.Board;
+import static comp1110.ass2.BoardState.*;
+
+import java.util.*;
+
+import static comp1110.ass2.BoardState.*;
 
 /**
  * This class provides the text interface for the IQ Focus Game
@@ -91,9 +93,52 @@ public class FocusGame {
      * @return True if the placement sequence is valid
      */
     public static boolean isPlacementStringValid(String placement) {
-        // FIXME Task 5: determine whether a placement string is valid
-        return false;
+        String[] placements = placement.split("(?<=\\G.{" + 4 + "})");
+
+        //Check if a placement string is well formed, if not, return "false"
+        if(!isPlacementStringWellFormed(placement)){
+            return false;
+        }
+
+        // Check if every placement is on the board
+        for(String p : placements) {
+            if (!isPlacementOnBoard(p)) {
+                return false;
+            }
+        }
+
+        //The code below checks for overlap
+        Shape[] shapeArr = new Shape[placements.length]; //Create an array to store the placements as Shapes
+
+        //fill the array with the Shape pieces
+        for(int i = 0; i < shapeArr.length; i++){
+            shapeArr[i] = new Shape(placements[i]);
+        }
+
+        //update the shapes data structure ONLY IF there is no overlap between shapes
+        for(int i = 0; i < placements.length; i++){
+            if(!isShapeOverlapping(placements[i])){
+                updateShapes(shapeArr[i]);
+            }
+        }
+
+        //Convert the shapes data structure into a list to make it easier to check for elements
+        List<Shape> listShapes = shapesAsList(shapes);
+        List<Shape> l = new ArrayList<>(); //a list which will only contain the shapes that were not overlapping
+
+        //add the non-overlapping shapes to the list
+        for(Shape s : Arrays.asList(shapeArr)){
+            if(listShapes.contains(s)){
+                l.add(s);
+            }
+        }
+        //clear the shapes data structure (since placements are not actually being placed)
+        shapes = new Shape[5][9];
+
+        //check if the list which contains non-overlapping shapes is the same size as the original placements array
+        return (l.size() == placements.length);
     }
+
 
     /**
      * Given a string describing a placement of pieces and a string describing

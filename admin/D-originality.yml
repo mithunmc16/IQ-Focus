@@ -4,16 +4,15 @@
 # This is your statement of your submitted work being your own.
 # Incorrectly filling out this statement could lead to charges
 # of academic misconduct.
-# 
+#
 # For information on how to fill this out correctly, see
 # https://cs.anu.edu.au/courses/comp1110/help/faq/09-originality/
 #
 
-#declaration: >-
-#  I declare that everything I have submitted for stage D of this assignment
- # and all stages before it is entirely my own work, with the following
- # exceptions:
-
+declaration: >-
+  We declare that everything we have submitted for Stage C of this assignment
+  and all stages before it is entirely our own work, with the following
+  exceptions:
 
 # Use this to list names of people who you collaborated with, and a
 # comment about what you collaborated on.
@@ -21,7 +20,7 @@
 # Add as many "name+comment" entries as necessary
 # (or remove it altogether if you haven't collaborated with anyone)
 #collaboration:
- # - name:
+#  - name:
 #    comment: >-
 
 # Use this to list any code that you used that you did not write,
@@ -31,10 +30,10 @@
 #
 # Add as many "url+licence+comment" entries as necessary
 # (or remove it altogether if you haven't used any external code)
-#code:
- # - comment:
- #   url:
- #   licence:
+code:
+  - comment: The code in BoardState for function shapesAsList was taken from stackoverflow and converts a 2d array into a list
+    url: https://stackoverflow.com/questions/11447780/convert-two-dimensional-array-to-list-in-java
+    licence: CC BY-SA 2.5
 
 # Use this to list any assets (artwork, sound, etc) that you used.
 # Provide a comment explaining your use of that asset and the URL
@@ -43,11 +42,17 @@
 # Add as many "url+licence+comment" entries as necessary
 # (or remove it altogether if you haven't used any external assets)
 #assets:
- # - comment:
- #   url:
- #   licence:
+#  - comment:
+#    url:
+#    licence:
 
 
-# sign *your* name and uid here
-#name:
-#uid:
+# Sign *your* name and uids here. (Remove entries if you have fewer
+# than three members.)
+signatures:
+  - name: Benjamin Samuel
+    uid: u6950152
+  - name: Joanne Louie
+    uid: u6949022
+  - name: Mithun Comar
+    uid: u6849970

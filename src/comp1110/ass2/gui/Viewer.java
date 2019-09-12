@@ -10,12 +10,16 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
-import javafx.scene.layout.HBox;
+import javafx.scene.layout.*;
+import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.paint.Color;
 import comp1110.ass2.FocusGame;
 import java.util.ArrayList;
+import java.util.List;
+import javafx.scene.shape.Line;
+
 import javafx.scene.image.ImageView;
 
 /**
@@ -30,6 +34,9 @@ public class Viewer extends Application {
     /* board layout */
     private static final int SQUARE_SIZE = 60;
     private static final int VIEWER_WIDTH = 720;
+
+    private static final int ROWS = 4;
+    private static final int COLUMNS = 8;
     //
     public static final int PIECE_IMAGE_SIZE = 3*SQUARE_SIZE;
     //
@@ -41,74 +48,29 @@ public class Viewer extends Application {
     private final Group root = new Group();
     private final Group pieces = new Group(); // new group for pieces
     private final Group controls = new Group();
+    private final Group block = new Group();
     private TextField textField;
 
-    /**
+      /**
      * Draw a placement in the window, removing any previously drawn one
      *
      * @param placement A valid placement string
      */
     void makePlacement(String placement) {
-        Scene scene = new Scene(new Group());
-        boolean validPlacement;
-        int n = 0;  //number of pieces contained within placement string
-        char orientation = placement.charAt(3);
-        int position;
-        int indexStart;
-        char tile = placement.charAt(0);
-        String piecePlacement;
-        ArrayList<ImageView> arrPiece = new ArrayList<>();
-        Image img = new Image(Viewer.class.getResource(URI_BASE + tile + ".png").toString());
+        root.getChildren().clear();
+        root.getChildren().add(controls);
+        char shape = placement.charAt(0);
+        int rotation = Character.getNumericValue(placement.charAt(3));
+        Image image = new Image(getClass().getResource(URI_BASE + shape + ".png").toString());
+        ImageView img = new ImageView();
+        img.setImage(image);
+        int r = rotation;
+        if(r >= 4)r -= 4;
+        img.setRotate(r * 90);
+        if(rotation >= 4)img.setScaleY(-1);
+        root.getChildren().add(img);
 
-
-        switch (orientation) {
-            case '0':
-
-                pieces.getChildren().clear();
-                ImageView i1 = new ImageView(img);
-                i1.setRotate(0);
-                root.getChildren().addAll(i1);
-                Stage stage = new Stage();
-                scene.setRoot(root);
-                stage.setScene(scene);
-                stage.show();
-                break;
-
-            case '1':
-
-                ImageView i2 = new ImageView(img);
-                i2.setRotate(90);
-                root.getChildren().addAll(i2);
-                Stage stage1 = new Stage();
-                stage1.setScene(scene);
-                stage1.show();
-                break;
-            case '2':
-
-                ImageView i3 = new ImageView(img);
-                i3.setRotate(180);
-                root.getChildren().addAll(i3);
-                Stage stage2 = new Stage();
-                stage2.setScene(scene);
-                stage2.show();
-                break;
-
-            case '3':
-
-                ImageView i4 = new ImageView(img);
-                i4.setRotate(270);
-                root.getChildren().addAll(i4);
-                Stage stage3 = new Stage();
-                stage3.setScene(scene);
-                stage3.show();
-                break;
-
-        }
-
-       // validPlacement = FocusGame.isPlacementStringWellFormed(placement);
-            // FIXME Task 4: implement the simple placement viewer
-        }
-    
+    }
 
     /**
      * Create a basic text field for input and a refresh button.

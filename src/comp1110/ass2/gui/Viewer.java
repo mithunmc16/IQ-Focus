@@ -1,6 +1,5 @@
 package comp1110.ass2.gui;
 
-import com.sun.glass.ui.View;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -11,14 +10,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.layout.*;
-import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
-import javafx.scene.shape.Rectangle;
-import javafx.scene.paint.Color;
-import comp1110.ass2.FocusGame;
-import java.util.ArrayList;
-import java.util.List;
-import javafx.scene.shape.Line;
 
 import javafx.scene.image.ImageView;
 

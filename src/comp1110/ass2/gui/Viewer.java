@@ -1,5 +1,6 @@
 package comp1110.ass2.gui;
 
+import comp1110.ass2.FocusGame;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -11,8 +12,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
-
 import javafx.scene.image.ImageView;
+
 
 /**
  * A very simple viewer for piece placements in the IQ-Focus game.
@@ -26,21 +27,12 @@ public class Viewer extends Application {
     /* board layout */
     private static final int SQUARE_SIZE = 60;
     private static final int VIEWER_WIDTH = 720;
-
     private static final int ROWS = 4;
     private static final int COLUMNS = 8;
-    //
-    public static final int PIECE_IMAGE_SIZE = 3*SQUARE_SIZE;
-    //
-    private static final double ROW_HEIGHT = SQUARE_SIZE ;// rotate 90 degree
     private static final int VIEWER_HEIGHT = 480;
-
     private static final String URI_BASE = "assets/";
-
     private final Group root = new Group();
-    private final Group pieces = new Group(); // new group for pieces
     private final Group controls = new Group();
-    private final Group block = new Group();
     private TextField textField;
 
       /**
@@ -49,21 +41,80 @@ public class Viewer extends Application {
      * @param placement A valid placement string
      */
     void makePlacement(String placement) {
+        System.out.println((FocusGame.isPlacementStringValid(placement)));// to check if placement is valid
         root.getChildren().clear();
         root.getChildren().add(controls);
-        char shape = placement.charAt(0);
-        int rotation = Character.getNumericValue(placement.charAt(3));
-        Image image = new Image(getClass().getResource(URI_BASE + shape + ".png").toString());
-        ImageView img = new ImageView();
-        img.setImage(image);
-        int r = rotation;
-        if(r >= 4)r -= 4;
-        img.setRotate(r * 90);
-        if(rotation >= 4)img.setScaleY(-1);
-        root.getChildren().add(img);
+        //output image only of placement string is valid or well formed
+        if (FocusGame.isPlacementStringValid(placement) || FocusGame.isPlacementStringWellFormed(placement)) {
 
+            int X = ((VIEWER_WIDTH - (COLUMNS * SQUARE_SIZE)) / 2);//X and Y coordinates initialised
+            int Y = ((VIEWER_HEIGHT - (ROWS * SQUARE_SIZE)) / 2);
+
+            for (int i = 0; i < placement.length(); i += 4) {
+                String placements = placement.substring(i, i + 4);//
+
+                char obj = placements.charAt(0);
+                int x = Character.getNumericValue(placements.charAt(1));
+                int y = Character.getNumericValue(placements.charAt(2));
+                int rotation = Character.getNumericValue(placements.charAt(3));
+
+                Image image = new Image(getClass().getResource(URI_BASE + obj + ".png").toString());
+                ImageView img = new ImageView();
+                img.setImage(image);
+//rotaing images based on character 3
+                int r = rotation;
+                if (r >= 4) {
+                    r -= 4;
+                }
+                img.setRotate(r * 90);
+                if (rotation >= 4) {
+                    img.setScaleY(-1);
+                }
+ // hardcoding height and width of the images.
+                int width;
+                int height;
+
+
+                if (obj == 'b' || obj == 'c' || obj == 'j') {
+                    width = 4;
+                } else if (obj == 'a' || obj == 'd' || obj == 'e' || obj == 'f' || obj == 'g' || obj == 'h') {
+                    width = 3;
+                } else {
+                    width = 2;
+                }
+
+
+                if (obj == 'h') {
+                    height = 3;
+                } else if (obj == 'a' || obj == 'b' || obj == 'c' || obj == 'e' || obj == 'g' || obj == 'j') {
+                    height = 2;
+                } else {
+                    height = 1;
+                }
+
+//scaling image to fit in the stage.
+               int widthScale = (width * SQUARE_SIZE);
+                int heightScale = (height * SQUARE_SIZE);
+
+                img.setFitHeight(heightScale);
+                img.setFitWidth(widthScale);
+
+                if (rotation % 2 == 0 || height == width) {
+
+                    img.setTranslateX(SQUARE_SIZE * (x - 1) + X);
+                    img.setTranslateY(SQUARE_SIZE * y + Y);
+                } else {
+
+                    img.setTranslateX(SQUARE_SIZE * (x - 1) + X - (((double) (Math.abs(height - width)) / 2) * SQUARE_SIZE));
+                    img.setTranslateY(SQUARE_SIZE * y + Y + (((double) (Math.abs(height - width)) / 2) * SQUARE_SIZE));
+                }
+
+
+                root.getChildren().add(img);
+            }
+        }
     }
-
+//FIXME Task 4
     /**
      * Create a basic text field for input and a refresh button.
      */

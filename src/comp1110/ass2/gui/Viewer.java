@@ -35,7 +35,7 @@ public class Viewer extends Application {
     private final Group controls = new Group();
     private TextField textField;
 
-      /**
+    /**
      * Draw a placement in the window, removing any previously drawn one
      *
      * @param placement A valid placement string
@@ -44,8 +44,8 @@ public class Viewer extends Application {
         System.out.println((FocusGame.isPlacementStringValid(placement)));// to check if placement is valid
         root.getChildren().clear();
         root.getChildren().add(controls);
-        //output image only of placement string is valid or well formed
-        if (FocusGame.isPlacementStringValid(placement) || FocusGame.isPlacementStringWellFormed(placement)) {
+        //output image only of placement string is valid && well formed
+        if (FocusGame.isPlacementStringValid(placement) && FocusGame.isPlacementStringWellFormed(placement)) {
 
             int X = ((VIEWER_WIDTH - (COLUMNS * SQUARE_SIZE)) / 2);//X and Y coordinates initialised
             int Y = ((VIEWER_HEIGHT - (ROWS * SQUARE_SIZE)) / 2);
@@ -61,7 +61,7 @@ public class Viewer extends Application {
                 Image image = new Image(getClass().getResource(URI_BASE + obj + ".png").toString());
                 ImageView img = new ImageView();
                 img.setImage(image);
-//rotaing images based on character 3
+//rotating images based on character 3
                 int r = rotation;
                 if (r >= 4) {
                     r -= 4;
@@ -70,7 +70,7 @@ public class Viewer extends Application {
                 if (rotation >= 4) {
                     img.setScaleY(-1);
                 }
- // hardcoding height and width of the images.
+                // hardcoding height and width of the images.
                 int width;
                 int height;
 
@@ -79,21 +79,21 @@ public class Viewer extends Application {
                     width = 4;
                 } else if (obj == 'a' || obj == 'd' || obj == 'e' || obj == 'f' || obj == 'g' || obj == 'h') {
                     width = 3;
-                } else {
+                }else {
                     width = 2;
                 }
 
 
                 if (obj == 'h') {
                     height = 3;
-                } else if (obj == 'a' || obj == 'b' || obj == 'c' || obj == 'e' || obj == 'g' || obj == 'j') {
+                } else if (obj == 'a' || obj == 'b' || obj == 'c' || obj == 'e' || obj == 'g' || obj == 'j'||obj=='d' || obj == 'i') {
                     height = 2;
                 } else {
                     height = 1;
                 }
 
 //scaling image to fit in the stage.
-               int widthScale = (width * SQUARE_SIZE);
+                int widthScale = (width * SQUARE_SIZE);
                 int heightScale = (height * SQUARE_SIZE);
 
                 img.setFitHeight(heightScale);

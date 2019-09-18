@@ -1,6 +1,6 @@
 package comp1110.ass2.gui;
 
-import com.sun.glass.ui.View;
+import comp1110.ass2.FocusGame;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -10,13 +10,10 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
-import javafx.scene.layout.HBox;
+import javafx.scene.layout.*;
 import javafx.stage.Stage;
-import javafx.scene.shape.Rectangle;
-import javafx.scene.paint.Color;
-import comp1110.ass2.FocusGame;
-import java.util.ArrayList;
 import javafx.scene.image.ImageView;
+
 
 /**
  * A very simple viewer for piece placements in the IQ-Focus game.
@@ -30,16 +27,11 @@ public class Viewer extends Application {
     /* board layout */
     private static final int SQUARE_SIZE = 60;
     private static final int VIEWER_WIDTH = 720;
-    //
-    public static final int PIECE_IMAGE_SIZE = 3*SQUARE_SIZE;
-    //
-    private static final double ROW_HEIGHT = SQUARE_SIZE ;// rotate 90 degree
+    private static final int ROWS = 4;
+    private static final int COLUMNS = 8;
     private static final int VIEWER_HEIGHT = 480;
-
     private static final String URI_BASE = "assets/";
-
     private final Group root = new Group();
-    private final Group pieces = new Group(); // new group for pieces
     private final Group controls = new Group();
     private TextField textField;
 
@@ -49,67 +41,80 @@ public class Viewer extends Application {
      * @param placement A valid placement string
      */
     void makePlacement(String placement) {
-        Scene scene = new Scene(new Group());
-        boolean validPlacement;
-        int n = 0;  //number of pieces contained within placement string
-        char orientation = placement.charAt(3);
-        int position;
-        int indexStart;
-        char tile = placement.charAt(0);
-        String piecePlacement;
-        ArrayList<ImageView> arrPiece = new ArrayList<>();
-        Image img = new Image(Viewer.class.getResource(URI_BASE + tile + ".png").toString());
+        System.out.println((FocusGame.isPlacementStringValid(placement)));// to check if placement is valid
+        root.getChildren().clear();
+        root.getChildren().add(controls);
+        //output image only of placement string is valid && well formed
+        if (FocusGame.isPlacementStringValid(placement) && FocusGame.isPlacementStringWellFormed(placement)) {
+
+            int X = ((VIEWER_WIDTH - (COLUMNS * SQUARE_SIZE)) / 2);//X and Y coordinates initialised
+            int Y = ((VIEWER_HEIGHT - (ROWS * SQUARE_SIZE)) / 2);
+
+            for (int i = 0; i < placement.length(); i += 4) {
+                String placements = placement.substring(i, i + 4);//
+
+                char obj = placements.charAt(0);
+                int x = Character.getNumericValue(placements.charAt(1));
+                int y = Character.getNumericValue(placements.charAt(2));
+                int rotation = Character.getNumericValue(placements.charAt(3));
+
+                Image image = new Image(getClass().getResource(URI_BASE + obj + ".png").toString());
+                ImageView img = new ImageView();
+                img.setImage(image);
+//rotating images based on character 3
+                int r = rotation;
+                if (r >= 4) {
+                    r -= 4;
+                }
+                img.setRotate(r * 90);
+                if (rotation >= 4) {
+                    img.setScaleY(-1);
+                }
+                // hardcoding height and width of the images.
+                int width;
+                int height;
 
 
-        switch (orientation) {
-            case '0':
+                if (obj == 'b' || obj == 'c' || obj == 'j') {
+                    width = 4;
+                } else if (obj == 'a' || obj == 'd' || obj == 'e' || obj == 'f' || obj == 'g' || obj == 'h') {
+                    width = 3;
+                }else {
+                    width = 2;
+                }
 
-                pieces.getChildren().clear();
-                ImageView i1 = new ImageView(img);
-                i1.setRotate(0);
-                root.getChildren().addAll(i1);
-                Stage stage = new Stage();
-                scene.setRoot(root);
-                stage.setScene(scene);
-                stage.show();
-                break;
 
-            case '1':
+                if (obj == 'h') {
+                    height = 3;
+                } else if (obj == 'a' || obj == 'b' || obj == 'c' || obj == 'e' || obj == 'g' || obj == 'j'||obj=='d' || obj == 'i') {
+                    height = 2;
+                } else {
+                    height = 1;
+                }
 
-                ImageView i2 = new ImageView(img);
-                i2.setRotate(90);
-                root.getChildren().addAll(i2);
-                Stage stage1 = new Stage();
-                stage1.setScene(scene);
-                stage1.show();
-                break;
-            case '2':
+//scaling image to fit in the stage.
+                int widthScale = (width * SQUARE_SIZE);
+                int heightScale = (height * SQUARE_SIZE);
 
-                ImageView i3 = new ImageView(img);
-                i3.setRotate(180);
-                root.getChildren().addAll(i3);
-                Stage stage2 = new Stage();
-                stage2.setScene(scene);
-                stage2.show();
-                break;
+                img.setFitHeight(heightScale);
+                img.setFitWidth(widthScale);
 
-            case '3':
+                if (rotation % 2 == 0 || height == width) {
 
-                ImageView i4 = new ImageView(img);
-                i4.setRotate(270);
-                root.getChildren().addAll(i4);
-                Stage stage3 = new Stage();
-                stage3.setScene(scene);
-                stage3.show();
-                break;
+                    img.setTranslateX(SQUARE_SIZE * (x - 1) + X);
+                    img.setTranslateY(SQUARE_SIZE * y + Y);
+                } else {
 
+                    img.setTranslateX(SQUARE_SIZE * (x - 1) + X - (((double) (Math.abs(height - width)) / 2) * SQUARE_SIZE));
+                    img.setTranslateY(SQUARE_SIZE * y + Y + (((double) (Math.abs(height - width)) / 2) * SQUARE_SIZE));
+                }
+
+
+                root.getChildren().add(img);
+            }
         }
-
-       // validPlacement = FocusGame.isPlacementStringWellFormed(placement);
-            // FIXME Task 4: implement the simple placement viewer
-        }
-    
-
+    }
+//FIXME Task 4
     /**
      * Create a basic text field for input and a refresh button.
      */

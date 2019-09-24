@@ -34,6 +34,9 @@ public class ViablePlacementsTest {
         }
     }
 
+
+
+
     /*
      * Add the following tests:
      * 1 - remove one piece placement from solutions,

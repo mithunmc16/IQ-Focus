@@ -34,6 +34,8 @@ public class ViablePlacementsTest {
         }
     }
 
+
+
     /*
      * Add the following tests:
      * 1 - remove one piece placement from solutions,
@@ -47,6 +49,11 @@ public class ViablePlacementsTest {
      * 4 - a few cases with more vps
      */
 
+
+    @Test
+    public void test_all(){
+        test("a000c113d302e323f400g420h522i613b701", "RRRBWBBRB", 1,3, null);
+    }
     @Test
     public void test_lastP() {
         for (int i = 0; i < VP_LAST.length; i++) {

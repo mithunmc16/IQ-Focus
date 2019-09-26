@@ -3,7 +3,10 @@ package comp1110.ass2.gui;
 import comp1110.ass2.FocusGame;
 import javafx.application.Application;
 import javafx.scene.Group;
+import javafx.scene.effect.DropShadow;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 import java.net.URI;
@@ -23,7 +26,7 @@ public class Board extends Application {
     private final Group board = new Group();
 
     private static final String URI_BASE = "assets/";
-    private static final String BASEBOARD_URI = Board.class.getResource(URI_BASE + "board.png").toString();
+   // private static final String BASEBOARD_URI = Board.class.getResource(URI_BASE + "board.png").toString();
 
     /*The underlying game*/
     FocusGame game;
@@ -31,14 +34,89 @@ public class Board extends Application {
     /*the state of the shapes*/
     char[] shapeState = new char[10]; //10 shapes all off the screen initially
 
+    /*Initialise dropShadow*/
+    private static DropShadow dropShadow;{
+        dropShadow = new DropShadow();
+        dropShadow.setOffsetX(2.0);
+        dropShadow.setOffsetY(2.0);
+        dropShadow.setColor(Color.color(0,0,0,0.4));
+    }
+
     /*representation of the shapes */
     class GShape extends ImageView {
-        int shapeID;
+        char piece;
 
-        GShape(char shape) {
-            if(shape > 'j' || shape < 'a'){
-                throw new IllegalArgumentException("Bad shape: \"" + shape + "\"");
+        /**
+         * Construct a playing piece
+         * @param piece The piece to be created, represented by a letter
+         */
+
+        GShape(char piece) {
+            if(piece > 'j' || piece < 'a'){
+                throw new IllegalArgumentException("Bad piece: \"" + piece + "\"");
             }
+            this.piece = piece;
+            setFitWidth(SQUARE_SIZE);
+            setFitHeight(SQUARE_SIZE);
+            setImage(new Image(Board.class.getResource(URI_BASE + piece + ".png").toString()));
+
+            //Set the height and width depending on which shape it is
+            switch (piece) {
+                case 'a':
+                    setFitWidth(SQUARE_SIZE*3);
+                    setFitHeight(SQUARE_SIZE*2);
+
+                case 'b':
+                    setFitWidth(SQUARE_SIZE*4);
+                    setFitHeight(SQUARE_SIZE*2);
+
+                case 'c':
+                    setFitWidth(SQUARE_SIZE*4);
+                    setFitHeight(SQUARE_SIZE*2);
+
+                case 'd':
+                    setFitWidth(SQUARE_SIZE*3);
+                    setFitHeight(SQUARE_SIZE*2);
+
+                case 'e':
+                    setFitWidth(SQUARE_SIZE*3);
+                    setFitHeight(SQUARE_SIZE*2);
+
+                case 'f':
+                    setFitWidth(SQUARE_SIZE*3);
+                    setFitHeight(SQUARE_SIZE);
+
+                case 'g':
+                    setFitWidth(SQUARE_SIZE*3);
+                    setFitHeight(SQUARE_SIZE*2);
+
+                case 'h':
+                    setFitWidth(SQUARE_SIZE*3);
+                    setFitHeight(SQUARE_SIZE*3);
+
+                case 'i':
+                    setFitWidth(SQUARE_SIZE*2);
+                    setFitHeight(SQUARE_SIZE*2);
+
+                case 'j':
+                    setFitWidth(SQUARE_SIZE*4);
+                    setFitHeight(SQUARE_SIZE*2);
+
+            }
+
+            setEffect(dropShadow);
+        }
+
+        // Create draggable pieces
+        class DraggabblePiece extends GShape {
+            int homeX, homeY;
+            double mouseX, mouseY;
+            int orientation;
+
+            DraggabblePiece(char tile){
+                super(tile);
+            }
+
         }
     }
 

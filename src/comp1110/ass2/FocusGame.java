@@ -135,6 +135,7 @@ public class FocusGame {
 
         //check if the list which contains non-overlapping shapes is the same size as the original placements array
         return (l.size() == placements.length);
+            // FIXME Task 5
     }
 
 
@@ -164,13 +165,68 @@ public class FocusGame {
      * @return A set of viable piece placements, or null if there are none.
      */
     public static Set<String> getViablePiecePlacements(String placement, String challenge, int col, int row) {
-        Set<String> allowedPlacements = new HashSet<>();
+        Set<String> piecelist = new HashSet<>();
+        Set<Character> input = new HashSet<>();
+        int length = placement.length() / 4;
+        char[] placements = new char[length];
+
+        char[] notin = new char[100];
+
+        int x = 0;
+        for (int i = 0; i < placement.length(); i += 4) {
+            placements[x] = placement.charAt(i);//
+            x++;
+        }
 
 
+        Arrays.sort(placements);
 
-        // FIXME Task 6: determine the set of all viable piece placements given existing placements and a challenge
-        return allowedPlacements;
+ 
+        String r = Integer.toString(row);
+        String c = Integer.toString(col);
+        Set<Character> allset = new HashSet<>(Arrays.asList('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j'));
+
+        for (int i = 0; i < placements.length; i++) {
+            input.add(placements[i]);
+        }
+        allset.remove(input);
+        //String[]  = new String[allset.size()];
+        Character[] not_in_placement = allset.toArray(new Character[allset.size()]);
+        Arrays.sort(not_in_placement);
+        for (int i = 0; i < not_in_placement.length; i++) {
+            String first = not_in_placement[i].toString();
+            for (int j = 0; j < 4; j++) {
+                String val = Integer.toString(j);
+                for (int k = 0; k <= row; k++) {
+                    for (int l = 0; l <= col; l++) {
+                        String a = first + l + k + val;
+                        String fin = placement + a;
+                        if (isPlacementStringValid(fin)) {
+                            piecelist.add(a);
+
+                        }
+                    }
+                }
+            }
+
+
+            //FIXME Task 6
+
+        }
+            if(piecelist.isEmpty()){
+                return null;
+            }
+            return piecelist;
+
     }
+
+
+
+
+
+
+
+
 
     /**
      * Return the canonical encoding of the solution to a particular challenge.

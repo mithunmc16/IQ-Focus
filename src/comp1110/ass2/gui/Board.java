@@ -26,7 +26,7 @@ public class Board extends Application {
     private final Group board = new Group();
 
     private static final String URI_BASE = "assets/";
-   // private static final String BASEBOARD_URI = Board.class.getResource(URI_BASE + "board.png").toString();
+    private static final String BASEBOARD_URI = Board.class.getResource(URI_BASE + "board.png").toString();
 
     /*The underlying game*/
     FocusGame game;

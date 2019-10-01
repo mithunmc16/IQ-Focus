@@ -1,0 +1,30 @@
+# Write your name and UID here.
+#
+reviewer:
+    name: Benjamin Samuel
+    uid: u6950253
+
+# Write the name of the author of the code here.
+#
+author:
+  name: Mithun Comar
+  uid: u6849970
+
+# Write the class or method being reviewed here.
+#
+component: Task 4 - makePlacement
+
+# Write a list of review comments here.
+#
+comments:
+  - The code is well structured and has consistent style throughout
+  - The code contains is well documented, some comments could be more descriptive
+  - The code is clear in places where there are no comments
+  - Local variables and methods are appropriately named
+  - Using isPlacementStringWellFormed method is redundant after using isPlacementStringValid
+    (a valid placement string requires that the placement is well formed) -> Can remove the check
+    for well formed placements to save time
+  - Code functions as intended in all situations
+
+
+

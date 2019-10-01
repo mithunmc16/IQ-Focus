@@ -1,0 +1,28 @@
+# Write your name and UID here.
+#
+reviewer:
+    name: Joanne Louie
+    uid: u6949022
+
+# Write the name of the author of the code here.
+#
+author:
+  name: Benjamin Samuel
+  uid: u6950152
+
+# Write the class or method being reviewed here.
+#
+component: Task 2 and Task 3
+
+# Write a list of review comments here.
+#
+comments:
+  - The code is nicely styled and concise
+  - Generally the code is clear enough, but documentation could be improved by including more comments
+  - The sequence, selection and iteration used in the methods are appropriate
+  - Methods and variables are properly named. The local variables in Task 2 could be named to be more informative which would improve the style.
+  - The style is consistent throughout
+  - The code does not appear to have errors and functions as expected
+
+
+

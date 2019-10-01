@@ -22,6 +22,7 @@ import javafx.scene.image.ImageView;
  * class does not play a game, it just illustrates various piece
  * placements.
  */
+//The below code is written by Mithun Comar
 public class Viewer extends Application {
 
     /* board layout */

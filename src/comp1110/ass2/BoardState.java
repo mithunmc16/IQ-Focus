@@ -8,6 +8,9 @@ import static comp1110.ass2.Orientation.*;
 import static comp1110.ass2.ShapeType.*;
 
 public class BoardState {
+    /**
+     * All of the following code is written by Joanne Louie, u6949022
+     */
 
     /*
     States at each of the board's 43 locations.
@@ -73,7 +76,6 @@ public class BoardState {
                 }
              break;
         }
-        //for orientation west, any pieces with a length less than 4 and height less than 3 must go boardStates[row-1][col-1
         if(orientation == WEST){
             if(shapetype == H){
                 for(int col = 0; col < 4; col++){

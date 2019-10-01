@@ -27,6 +27,8 @@ public class FocusGame {
      * @param piecePlacement A string describing a piece placement
      * @return True if the piece placement is well-formed
      */
+
+    //Written by Benjamin Samuel
     static boolean isPiecePlacementWellFormed(String piecePlacement) {
         if (piecePlacement.length() != 4) {
             return false;
@@ -60,6 +62,8 @@ public class FocusGame {
      * @param placement A string describing a placement of one or more pieces
      * @return True if the placement is well-formed
      */
+
+    //Written by Benjamin Samuel
     public static boolean isPlacementStringWellFormed(String placement) {
         if (placement.length() % 4 == 0 && placement.length() >= 4 && placement.length() <= 40) {
             String[] placements = placement.split("(?<=\\G.{" + 4 + "})");
@@ -92,6 +96,8 @@ public class FocusGame {
      * @param placement A placement string
      * @return True if the placement sequence is valid
      */
+
+    //Written by Joanne Louie
     public static boolean isPlacementStringValid(String placement) {
         String[] placements = placement.split("(?<=\\G.{" + 4 + "})");
 
@@ -110,13 +116,9 @@ public class FocusGame {
         //The code below checks for overlap
         Shape[] shapeArr = new Shape[placements.length]; //Create an array to store the placements as Shapes
 
-        //fill the array with the Shape pieces
-        for(int i = 0; i < shapeArr.length; i++){
-            shapeArr[i] = new Shape(placements[i]);
-        }
-
         //update the shapes data structure ONLY IF there is no overlap between shapes
         for(int i = 0; i < placements.length; i++){
+            shapeArr[i] = new Shape(placements[i]);
             if(!isShapeOverlapping(placements[i])){
                 updateShapes(shapeArr[i]);
             }
@@ -164,6 +166,8 @@ public class FocusGame {
      * @param row      The cell's row.
      * @return A set of viable piece placements, or null if there are none.
      */
+
+    //Written by Joanne Louie
     public static Set<String> getViablePiecePlacements(String placement, String challenge, int col, int row) {
         //Create a set of all valid shapes which can be placed on the board
         Set<String> validShapes = generateValidUnplacedPieces(getUnplacedPieces(placement), placement);
@@ -208,15 +212,15 @@ public class FocusGame {
         for(Iterator<String>i = validShapes.iterator(); i.hasNext();){
             String element = i.next();
             updateStates(element);
-                for(int column = 3; column < 6; column++){
-                    for(int r = 1; r < 4; r++){
-                            if(boardStates[r][column] != null){
-                                if(boardStates[r][column] != boardWithChallenge[r][column]){
-                                    i.remove();
-                                }
-                            }
+            for(int column = 3; column < 6; column++){
+                for(int r = 1; r < 4; r++){
+                    if(boardStates[r][column] != null){
+                        if(boardStates[r][column] != boardWithChallenge[r][column]){
+                            i.remove();
+                        }
                     }
                 }
+            }
 
             boardStates = new State[5][9];
         }
@@ -232,6 +236,7 @@ public class FocusGame {
      * @param placement
      * @return all unplaced shapes in a set
      */
+    //Written by Mithun Comar, rewritten as a helper function for Task 6 by Joanne Louie
     public static Set<Character> getUnplacedPieces(String placement){
         Set<Character> placementPieces = new HashSet<>();
 
@@ -257,6 +262,7 @@ public class FocusGame {
      * @return
      */
 
+    //Written by Mithun Comar, rewritten as a helper function for Task 6 by Joanne Louie
     public static Set<String> generateValidUnplacedPieces(Set<Character> pieces, String placement){
         Set<String> placementPieces = new HashSet<>();
 

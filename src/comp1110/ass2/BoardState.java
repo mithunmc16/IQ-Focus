@@ -6,7 +6,6 @@ import java.util.List;
 
 import static comp1110.ass2.Orientation.*;
 import static comp1110.ass2.ShapeType.*;
-import static comp1110.ass2.State.EMPTY;
 
 public class BoardState {
 
@@ -15,15 +14,145 @@ public class BoardState {
     The board has been initialised to represent the empty board.
     The "null" value represents the part of the board that is not indented,
     hence a piece cannot be placed there.
-    (It seems a bit redundant at the moment but I'm keeping it here in case it's helpful later)
      */
-    private State[][] boardStates = {
-            {EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY},
-            {EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY},
-            {EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY},
-            {EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY},
-            {null, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, null},
-    };
+    public static State[][] boardStates = new State[5][9];
+
+    /**
+     * The updateStates function updates every cell in the boardStates array which represents the gameboard,
+     * given a placement representing a shape.
+     * For example, "a000" will update (0,0) to G (green), (0,1) to W (white) and so on.
+     */
+
+    public static void updateStates(String placement){
+        Shape shape = new Shape(placement);
+        ShapeType shapetype = shape.getShapeType();
+        Orientation orientation = shape.getOrientation();
+        Location location = shape.getLocation();
+        int x = location.getX();
+        int y = location.getY();
+
+
+        switch(orientation){
+            case EAST:
+                for(int col = 0; col < 4; col++){
+                    for(int row = 0; row < 3; row++){
+                        if(shapetype.stateFromOffset(col,row,orientation) != null){
+                            boardStates[y + row][x + col] = shapetype.stateFromOffset(col,row,orientation);
+                        }
+                    }
+                }
+            break;
+
+            case SOUTH: //south
+                if(shapetype == H){
+                    for(int row = 0; row < 4; row++){
+                        for(int col = 0; col < 3; col++){
+                            if(shapetype.stateFromOffset(col,row,orientation) != null){
+                                boardStates[row + y][col+x] = shapetype.stateFromOffset(col,row,orientation);
+                            }
+                        }
+                    }
+                }
+                else if(shapetype == F){
+                    for(int row = 0; row < 4; row++){
+                        for(int col = 2; col < 3; col++){
+                            if(shapetype.stateFromOffset(col,row,orientation) != null){
+                                boardStates[row+y][(col-2)+x] = shapetype.stateFromOffset(col,row,orientation);
+                            }
+                        }
+                    }
+                }
+                else{
+                    for(int row = 0; row < 4; row++){
+                        for(int col = 1; col < 3; col++){
+                            if(shapetype.stateFromOffset(col,row,orientation) != null){
+                                boardStates[row+y][(col-1)+x] = shapetype.stateFromOffset(col,row,orientation);
+                            }
+                        }
+                    }
+                }
+             break;
+        }
+        //for orientation west, any pieces with a length less than 4 and height less than 3 must go boardStates[row-1][col-1
+        if(orientation == WEST){
+            if(shapetype == H){
+                for(int col = 0; col < 4; col++){
+                    for(int row = 0; row < 3; row++){
+                        if(shapetype.stateFromOffset(col,row,orientation) != null){
+                            boardStates[row+y][(col-1)+x] = shapetype.stateFromOffset(col,row,orientation);
+                        }
+                    }
+                }
+            }
+            else if(shapetype == B || shapetype == C || shapetype == J){
+                for(int col = 0; col<4; col++){
+                    for(int row = 1; row <3; row++){
+                        if(shapetype.stateFromOffset(col,row,orientation) != null){
+                            boardStates[(row-1)+y][col+x] = shapetype.stateFromOffset(col,row,orientation);
+                        }
+                    }
+                }
+            }
+            else if(shapetype == I){
+                for(int col = 2; col<4; col++){
+                    for(int row = 1; row <3; row++){
+                        if(shapetype.stateFromOffset(col,row,orientation) != null){
+                            boardStates[(row-1)+y][(col-2)+x] = shapetype.stateFromOffset(col,row,orientation);
+                        }
+                    }
+                }
+            }
+            else if(shapetype == F){
+                for(int col = 1; col<4; col++){
+                    for(int row = 2; row <3; row++){
+                        if(shapetype.stateFromOffset(col,row,orientation) != null){
+                            boardStates[(row-2)+y][(col-1)+x] = shapetype.stateFromOffset(col,row,orientation);
+                        }
+                    }
+                }
+            }
+            else{
+                for(int col = 1; col < 4; col++){
+                    for(int row = 1; row <3; row++){
+                        if(shapetype.stateFromOffset(col,row,orientation) != null){
+                            boardStates[(row-1)+y][(col-1)+x] = shapetype.stateFromOffset(col,row,orientation);
+                        }
+                    }
+                }
+            }
+        }
+
+        if(orientation == NORTH){
+            if(shapetype == B || shapetype == C || shapetype == J){
+                for(int row = 0; row < 4; row++){
+                    for(int col = 0; col <3; col++){
+                        if(shapetype.stateFromOffset(col,row,orientation) != null){
+                            boardStates[row+y][col+x] = shapetype.stateFromOffset(col,row,orientation);
+                        }
+                    }
+                }
+            }
+            else if(shapetype == I){
+                for(int row = 2; row < 4; row++){
+                    for(int col = 0; col <3; col++){
+                        if(shapetype.stateFromOffset(col,row,orientation) != null){
+                            boardStates[(row-2)+y][col+x] = shapetype.stateFromOffset(col,row,orientation);
+                        }
+                    }
+                }
+            }
+            else{
+                for(int row = 1; row < 4; row++){
+                    for(int col = 0; col <3; col++){
+                        if(shapetype.stateFromOffset(col,row,orientation) != null){
+                            boardStates[(row-1)+y][col+x] = shapetype.stateFromOffset(col,row,orientation);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
 
     /**
     Shapes occupying the board where the indices refer to column (0 ... 8)
@@ -313,6 +442,8 @@ public class BoardState {
         }
 
     }
+    /**Test for isPlacementOnBoard*/
+
 
     /**
     isPlacementOnBoard checks if the 4- character string representing a shape placement fits on the board.

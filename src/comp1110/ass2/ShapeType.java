@@ -1,9 +1,11 @@
 package comp1110.ass2;
 
 import static comp1110.ass2.State.*;
+import static comp1110.ass2.BoardState.*;
 
 public enum ShapeType {
     A, B, C, D, E, F, G, H, I, J;
+
 
     /**
      * The following functions are heavily inspired by Assignment 1 "TileType".
@@ -72,6 +74,7 @@ public enum ShapeType {
                 else{
                     return states[(2 - offY)*4 + (3 - offX)];
                 }
+
             case NORTH:
                 if(this != H){
                     if(offX == 2){return null;}
@@ -84,6 +87,9 @@ public enum ShapeType {
                 if(this == I){
                     return (offY == 0 || offY == 1) ? null : states[(4 * offX) + (3 - offY)];
                 }
+                else{
+                    return states[(4*offX) + (3-offY)];
+                }
 
         } return null;
     }
@@ -95,54 +101,54 @@ public enum ShapeType {
 
     private static State[][] stateKey = {
             // Represents Shape A
-            {GREEN, WHITE, RED, EMPTY,
-            EMPTY, RED, EMPTY, EMPTY,
-            EMPTY, EMPTY, EMPTY, EMPTY},
+            {State.G, W, R, null,
+            null, R, null, null,
+            null, null, null, null},
 
             //Represents Shape B
-            {EMPTY, BLUE, GREEN, GREEN,
-            WHITE, WHITE, EMPTY, EMPTY,
-            EMPTY, EMPTY, EMPTY, EMPTY},
+            {null, State.B, State.G, State.G,
+            W, W, null, null,
+            null, null, null, null},
 
             //Represents Shape C
-            {EMPTY, EMPTY, GREEN, EMPTY,
-            RED, RED, WHITE, BLUE,
-            EMPTY, EMPTY, EMPTY, EMPTY},
+            {null, null, State.G, null,
+            R, R, W, State.B,
+            null, null, null, null},
 
             //Represents Shape D
-            {RED, RED, RED, EMPTY,
-            EMPTY, EMPTY, BLUE, EMPTY,
-            EMPTY, EMPTY, EMPTY, EMPTY},
+            {R, R, R, null,
+            null, null, State.B, null,
+            null, null, null, null},
 
             //Represents Shape E
-            {BLUE, BLUE, BLUE, EMPTY,
-            RED, RED, EMPTY, EMPTY,
-            EMPTY, EMPTY, EMPTY, EMPTY},
+            {State.B, State.B, State.B, null,
+            R, R, null, null,
+            null, null, null, null},
 
             //Represents Shape F
-            {WHITE, WHITE, WHITE, EMPTY,
-            EMPTY, EMPTY, EMPTY, EMPTY,
-            EMPTY, EMPTY, EMPTY, EMPTY},
+            {W, W, W, null,
+            null, null, null, null,
+            null, null, null, null},
 
             //Represents Shape G
-            {WHITE, BLUE, EMPTY, EMPTY,
-            EMPTY, BLUE, WHITE, EMPTY,
-            EMPTY, EMPTY, EMPTY, EMPTY},
+            {W, State.B, null, null,
+            null, State.B, W, null,
+            null, null, null, null},
 
             //Represents Shape H
-            {RED, GREEN, GREEN, EMPTY,
-            WHITE, EMPTY, EMPTY, EMPTY,
-            WHITE, EMPTY, EMPTY, EMPTY},
+            {R, State.G, State.G, null,
+            W, null, null, null,
+            W, null, null, null},
 
             //Represents Shape I
-            {BLUE, BLUE, EMPTY, EMPTY,
-             EMPTY, WHITE, EMPTY, EMPTY,
-             EMPTY, EMPTY, EMPTY, EMPTY
+            {State.B, State.B, null, null,
+             null, W, null, null,
+             null, null, null, null
             },
 
             //Represents Shape J
-            {GREEN, GREEN, WHITE, RED,
-            GREEN, EMPTY, EMPTY, EMPTY,
-            EMPTY, EMPTY, EMPTY, EMPTY}
+            {State.G, State.G, W, R,
+            State.G, null, null, null,
+            null, null, null, null}
     };
 }

@@ -36,20 +36,25 @@ public class Viewer extends Application {
     private final Group controls = new Group();
     private TextField textField;
 
+
     /**
      * Draw a placement in the window, removing any previously drawn one
      *
      * @param placement A valid placement string
      */
     void makePlacement(String placement) {
+
         System.out.println((FocusGame.isPlacementStringValid(placement)));// to check if placement is valid
         root.getChildren().clear();
+
         root.getChildren().add(controls);
+
         //output image only of placement string is valid && well formed
+
         if (FocusGame.isPlacementStringValid(placement) && FocusGame.isPlacementStringWellFormed(placement)) {
 
-            int X = ((VIEWER_WIDTH - (COLUMNS * SQUARE_SIZE)) / 2);//X and Y coordinates initialised
-            int Y = ((VIEWER_HEIGHT - (ROWS * SQUARE_SIZE)) / 2);
+            int X = ((VIEWER_WIDTH - (COLUMNS * SQUARE_SIZE))/4);//X and Y coordinates initialised
+            int Y = ((VIEWER_HEIGHT - (ROWS * SQUARE_SIZE))/4);
 
             for (int i = 0; i < placement.length(); i += 4) {
                 String placements = placement.substring(i, i + 4);//
@@ -60,17 +65,14 @@ public class Viewer extends Application {
                 int rotation = Character.getNumericValue(placements.charAt(3));
 
                 Image image = new Image(getClass().getResource(URI_BASE + obj + ".png").toString());
+
                 ImageView img = new ImageView();
                 img.setImage(image);
 //rotating images based on character 3
                 int r = rotation;
-                if (r >= 4) {
-                    r -= 4;
-                }
+
                 img.setRotate(r * 90);
-                if (rotation >= 4) {
-                    img.setScaleY(-1);
-                }
+
                 // hardcoding height and width of the images.
                 int width;
                 int height;
@@ -102,7 +104,7 @@ public class Viewer extends Application {
 
                 if (rotation % 2 == 0 || height == width) {
 
-                    img.setTranslateX(SQUARE_SIZE * (x - 1) + X);
+                    img.setTranslateX(SQUARE_SIZE * (x-1) + X);
                     img.setTranslateY(SQUARE_SIZE * y + Y);
                 } else {
 

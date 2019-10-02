@@ -1,8 +1,8 @@
 # Write your name and UID here.
 #
 reviewer:
-    name:
-    uid:
+    name: Mithun Comar
+    uid: u6849970
 
 # Write the name of the author of the code here.
 #
@@ -12,11 +12,14 @@ author:
 
 # Write the class or method being reviewed here.
 #
-component:
+component: Task 5
 
 # Write a list of review comments here.
 #
 comments:
+  - The code is well structured and concise
+  - Sufficient comments are present.
+  - 
   -
 
 

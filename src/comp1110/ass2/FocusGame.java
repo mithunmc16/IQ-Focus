@@ -1,8 +1,6 @@
 package comp1110.ass2;
 
 import static comp1110.ass2.BoardState.*;
-import static comp1110.ass2.State.*;
-
 
 import java.util.*;
 
@@ -27,8 +25,6 @@ public class FocusGame {
      * @param piecePlacement A string describing a piece placement
      * @return True if the piece placement is well-formed
      */
-
-    //Written by Benjamin Samuel
     static boolean isPiecePlacementWellFormed(String piecePlacement) {
         if (piecePlacement.length() != 4) {
             return false;
@@ -62,8 +58,6 @@ public class FocusGame {
      * @param placement A string describing a placement of one or more pieces
      * @return True if the placement is well-formed
      */
-
-    //Written by Benjamin Samuel
     public static boolean isPlacementStringWellFormed(String placement) {
         if (placement.length() % 4 == 0 && placement.length() >= 4 && placement.length() <= 40) {
             String[] placements = placement.split("(?<=\\G.{" + 4 + "})");
@@ -96,8 +90,6 @@ public class FocusGame {
      * @param placement A placement string
      * @return True if the placement sequence is valid
      */
-
-    //Written by Joanne Louie
     public static boolean isPlacementStringValid(String placement) {
         String[] placements = placement.split("(?<=\\G.{" + 4 + "})");
 
@@ -116,29 +108,35 @@ public class FocusGame {
         //The code below checks for overlap
         Shape[] shapeArr = new Shape[placements.length]; //Create an array to store the placements as Shapes
 
+        //fill the array with the Shape pieces
+        for(int i = 0; i < shapeArr.length; i++){
+            shapeArr[i] = new Shape(placements[i]);
+        }
+
         //update the shapes data structure ONLY IF there is no overlap between shapes
         for(int i = 0; i < placements.length; i++){
-            shapeArr[i] = new Shape(placements[i]);
             if(!isShapeOverlapping(placements[i])){
                 updateShapes(shapeArr[i]);
             }
         }
-        List<Shape> nonOverlappingShapes = new ArrayList<>(); //a list which will only contain the shapes that were not overlapping
-        Set<Shape> addedShapes = new HashSet<>(shapesAsList(shapes)); //A set of all shapes which have been added to the board
-        for(Shape s : shapeArr){
-            if(addedShapes.contains(s)){
-                nonOverlappingShapes.add(s);
+
+        //Convert the shapes data structure into a list to make it easier to check for elements
+        List<Shape> listShapes = shapesAsList(shapes);
+        List<Shape> l = new ArrayList<>(); //a list which will only contain the shapes that were not overlapping
+
+        //add the non-overlapping shapes to the list
+        for(Shape s : Arrays.asList(shapeArr)){
+            if(listShapes.contains(s)){
+                l.add(s);
             }
         }
         //clear the shapes data structure (since placements are not actually being placed)
         shapes = new Shape[5][9];
 
         //check if the list which contains non-overlapping shapes is the same size as the original placements array
-        //if they're not the same, at least one of the shapes in the placement string was overlapping another
-        return (nonOverlappingShapes.size() == placements.length);
+        return (l.size() == placements.length);
+            // FIXME Task 5
     }
-
-
 
 
     /**
@@ -166,123 +164,69 @@ public class FocusGame {
      * @param row      The cell's row.
      * @return A set of viable piece placements, or null if there are none.
      */
-
-    //Written by Joanne Louie
     public static Set<String> getViablePiecePlacements(String placement, String challenge, int col, int row) {
-        //Create a set of all valid shapes which can be placed on the board
-        Set<String> validShapes = generateValidUnplacedPieces(getUnplacedPieces(placement), placement);
+        Set<String> piecelist = new HashSet<>();
+        Set<Character> input = new HashSet<>();
+        int length = placement.length() / 4;
+        char[] placements = new char[length];
 
-        //If there is only one shape in the set of all possible valid shapes, return the set
-        if(validShapes.size() == 1){
-            return validShapes;
+        char[] notin = new char[100];
+
+        int x = 0;
+        for (int i = 0; i < placement.length(); i += 4) {
+            placements[x] = placement.charAt(i);//
+            x++;
         }
 
-        //convert the challenge colours into states & store them into a State array
-        State[] challengeStates = new State[challenge.length()];
-        for(int i = 0; i < challengeStates.length; i++){
-            challengeStates[i] = stateFromCharacter(challenge.charAt(i));
+
+        Arrays.sort(placements);
+
+
+        String r = Integer.toString(row);
+        String c = Integer.toString(col);
+        Set<Character> allset = new HashSet<>(Arrays.asList('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j'));
+
+        for (int i = 0; i < placements.length; i++) {
+            input.add(placements[i]);
         }
+        allset.remove(input);
+        //String[]  = new String[allset.size()];
+        Character[] not_in_placement = allset.toArray(new Character[allset.size()]);
+        Arrays.sort(not_in_placement);
+        for (int i = 0; i < not_in_placement.length; i++) {
+            String first = not_in_placement[i].toString();
+            for (int j = 0; j < 4; j++) {
+                String val = Integer.toString(j);
+                for (int k = 0; k <= row + 1; k++) {
+                    for (int l = 0; l <= col + 1; l++) {
+                        String a = first + l + k + val;
+                        String fin = placement + a;
+                        if (isPlacementStringValid(fin)) {
+                            piecelist.add(a);
 
-        //store the challenge states into the appropriate indexes on the 5x9 board
-        //this will be changed later using a for loop but was hardcoded to ensure the challenge was encoded into the right indexes properly
-        State[][] boardWithChallenge = new State[5][9];
-        boardWithChallenge[1][3] = stateFromCharacter(challenge.charAt(0));
-        boardWithChallenge[1][4] = stateFromCharacter(challenge.charAt(1));
-        boardWithChallenge[1][5] = stateFromCharacter(challenge.charAt(2));
-        boardWithChallenge[2][3] = stateFromCharacter(challenge.charAt(3));
-        boardWithChallenge[2][4] = stateFromCharacter(challenge.charAt(4));
-        boardWithChallenge[2][5] = stateFromCharacter(challenge.charAt(5));
-        boardWithChallenge[3][3] = stateFromCharacter(challenge.charAt(6));
-        boardWithChallenge[3][4] = stateFromCharacter(challenge.charAt(7));
-        boardWithChallenge[3][5] = stateFromCharacter(challenge.charAt(8));
-
-        //update the boardStates data structure with all the possible valid shapes
-        //check if the shapes cover the row and column, if not, remove.
-        for(Iterator<String> i = validShapes.iterator(); i.hasNext();){
-            String element = i.next();
-            updateStates(element);
-            if(boardStates[row][col] == null){
-                i.remove();
-            }
-
-            boardStates = new State[5][9];
-        }
-        //for each possible shape placement, update the state (the colour) in each cell
-        //if a challenge cell state gets updated, it must be the same colour indicated by the challenge string. If not, remove from set.
-        for(Iterator<String>i = validShapes.iterator(); i.hasNext();){
-            String element = i.next();
-            updateStates(element);
-            for(int column = 3; column < 6; column++){
-                for(int r = 1; r < 4; r++){
-                    if(boardStates[r][column] != null){
-                        if(boardStates[r][column] != boardWithChallenge[r][column]){
-                            i.remove();
                         }
                     }
                 }
             }
+        char[] Challenge = challenge.toCharArray();
 
-            boardStates = new State[5][9];
+
+            //FIXME Task 6
+
         }
-        if(validShapes.size() == 0){
-            return null;
-        }
-        // FIXME Task 6: determine the set of all viable piece placements given existing placements and a challenge
-        return validShapes;
-    }
-
-    /**Generates a list of unplaced shapes given a placement string
-     *
-     * @param placement
-     * @return all unplaced shapes in a set
-     */
-    //Written by Mithun Comar, rewritten as a helper function for Task 6 by Joanne Louie
-    public static Set<Character> getUnplacedPieces(String placement){
-        Set<Character> placementPieces = new HashSet<>();
-
-        for(int i = 0; i < placement.length(); i+=4){
-            placementPieces.add(placement.charAt(i));
-        }
-
-        Set<Character> unplacedPieces = new HashSet<>(Arrays.asList('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j'));
-        for(char piece : placementPieces){
-            unplacedPieces.remove(piece);
-        }
-        return unplacedPieces;
-
-    }
-
-    /**
-     * Given a set of all shapes which are unplaced, and all the places which have been placed, the function
-     * generates a set of all possible shapes which can be validly placed.
-     * NOTE to other members: this function needs to be optimised so it generates less pieces for Task 6 to check for.
-     * This could possibly be achieved by taking in a row and column and not adding a piece to a set if its too far from the row and coluumn
-     * @param pieces a set of all the unplaced shapes
-     * @param placement a string representing all of the pieces which have been placed on the board
-     * @return
-     */
-
-    //Written by Mithun Comar, rewritten as a helper function for Task 6 by Joanne Louie
-    public static Set<String> generateValidUnplacedPieces(Set<Character> pieces, String placement){
-        Set<String> placementPieces = new HashSet<>();
-
-        for(char piece : pieces){
-            String shape;
-            for(int i = 0; i < 8; i++){ //i for column
-                for(int j = 0; j < 5; j++){ //j for row
-                    for(int o = 0; o < 4; o++){ //o for orientation
-                        shape = piece + String.valueOf(i) + String.valueOf(j) + String.valueOf(o);
-
-                        if(isPlacementStringValid(placement + shape)){
-                            placementPieces.add(shape);
-                        }
-                    }
-                }
+            if(piecelist.isEmpty()){
+                return null;
             }
-        }
+            return piecelist;
 
-        return placementPieces;
     }
+
+
+
+
+
+
+
 
 
     /**

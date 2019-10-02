@@ -22,4 +22,20 @@ public enum State {
             return B;
         }
     }
+
+    public static char characterFromState(State state){
+        switch(state){
+            case B:
+                return 'B';
+
+            case G:
+                return 'G';
+
+            case W:
+                return 'W';
+
+            default:
+                return 'R';
+        }
+    }
 }

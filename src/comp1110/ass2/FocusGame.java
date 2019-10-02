@@ -169,66 +169,39 @@ public class FocusGame {
 
     //Written by Joanne Louie
     public static Set<String> getViablePiecePlacements(String placement, String challenge, int col, int row) {
-        //Create a set of all valid shapes which can be placed on the board
-        Set<String> validShapes = generateValidUnplacedPieces(getUnplacedPieces(placement), placement);
+        //Create a set of all the pieces which haven't been placed
+        Set<Character> unplacedPieces = getUnplacedPieces(placement);
+        Set<String> validPieces = new HashSet<>(); //Create the set which will contain all viable piece placements
 
-        //If there is only one shape in the set of all possible valid shapes, return the set
-        if(validShapes.size() == 1){
-            return validShapes;
-        }
+        for(char piece : unplacedPieces){
+            String shape;
+            for(int column = 0; column<8; column++){
+                for(int r = 0; r <5; r++){
+                    for(int orientation = 0; orientation < 4; orientation++){
+                        shape = piece + String.valueOf(column) + String.valueOf(r) + String.valueOf(orientation);
 
-        //convert the challenge colours into states & store them into a State array
-        State[] challengeStates = new State[challenge.length()];
-        for(int i = 0; i < challengeStates.length; i++){
-            challengeStates[i] = stateFromCharacter(challenge.charAt(i));
-        }
-
-        //store the challenge states into the appropriate indexes on the 5x9 board
-        //this will be changed later using a for loop but was hardcoded to ensure the challenge was encoded into the right indexes properly
-        State[][] boardWithChallenge = new State[5][9];
-        boardWithChallenge[1][3] = stateFromCharacter(challenge.charAt(0));
-        boardWithChallenge[1][4] = stateFromCharacter(challenge.charAt(1));
-        boardWithChallenge[1][5] = stateFromCharacter(challenge.charAt(2));
-        boardWithChallenge[2][3] = stateFromCharacter(challenge.charAt(3));
-        boardWithChallenge[2][4] = stateFromCharacter(challenge.charAt(4));
-        boardWithChallenge[2][5] = stateFromCharacter(challenge.charAt(5));
-        boardWithChallenge[3][3] = stateFromCharacter(challenge.charAt(6));
-        boardWithChallenge[3][4] = stateFromCharacter(challenge.charAt(7));
-        boardWithChallenge[3][5] = stateFromCharacter(challenge.charAt(8));
-
-        //update the boardStates data structure with all the possible valid shapes
-        //check if the shapes cover the row and column, if not, remove.
-        for(Iterator<String> i = validShapes.iterator(); i.hasNext();){
-            String element = i.next();
-            updateStates(element);
-            if(boardStates[row][col] == null){
-                i.remove();
-            }
-
-            boardStates = new State[5][9];
-        }
-        //for each possible shape placement, update the state (the colour) in each cell
-        //if a challenge cell state gets updated, it must be the same colour indicated by the challenge string. If not, remove from set.
-        for(Iterator<String>i = validShapes.iterator(); i.hasNext();){
-            String element = i.next();
-            updateStates(element);
-            for(int column = 3; column < 6; column++){
-                for(int r = 1; r < 4; r++){
-                    if(boardStates[r][column] != null){
-                        if(boardStates[r][column] != boardWithChallenge[r][column]){
-                            i.remove();
+                        if(isPlacementOnBoard(shape)){
+                            updateStates(shape); //update the board states only if a placement is on the board
+                            if(boardStates[row][col] != null){ //check if after updating the board with a placement, it's covering the cell
+                                if(placementConsistentWithChallenge(shape,challenge)){ //check if the placement is consistent with the challenge
+                                    if(isPlacementStringValid(placement + shape)){
+                                        validPieces.add(shape);
+                                    }
+                                }
+                            }
                         }
+                        boardStates = new State[5][9]; //remove all the states off the board to prepare for the next iteration
+
                     }
                 }
             }
-
-            boardStates = new State[5][9];
         }
-        if(validShapes.size() == 0){
+
+        if(validPieces.size() == 0){
             return null;
         }
-        // FIXME Task 6: determine the set of all viable piece placements given existing placements and a challenge
-        return validShapes;
+
+        return validPieces;
     }
 
     /**Generates a list of unplaced shapes given a placement string
@@ -253,10 +226,88 @@ public class FocusGame {
     }
 
     /**
+     * placementConsistentWithChallenge returns true if the placement is consistent with the challenge
+     * or returns false if the placement is inconsistent with the challenge
+     */
+
+    public static boolean placementConsistentWithChallenge(String placement, String challenge){
+        State[][] boardWithChallenge = new State[5][9];
+
+        //Encodes the challenge into the appropriate locations of the board
+        boardWithChallenge[1][3] = stateFromCharacter(challenge.charAt(0));
+        boardWithChallenge[1][4] = stateFromCharacter(challenge.charAt(1));
+        boardWithChallenge[1][5] = stateFromCharacter(challenge.charAt(2));
+        boardWithChallenge[2][3] = stateFromCharacter(challenge.charAt(3));
+        boardWithChallenge[2][4] = stateFromCharacter(challenge.charAt(4));
+        boardWithChallenge[2][5] = stateFromCharacter(challenge.charAt(5));
+        boardWithChallenge[3][3] = stateFromCharacter(challenge.charAt(6));
+        boardWithChallenge[3][4] = stateFromCharacter(challenge.charAt(7));
+        boardWithChallenge[3][5] = stateFromCharacter(challenge.charAt(8));
+
+        updateStates(placement);
+
+        //Checks if a piece is consistent with a challenge if it has covered a challenge cell
+        if(boardStates[1][3]!=null){
+            if(characterFromState(boardStates[1][3]) != challenge.charAt(0)){
+                return false;
+            }
+        }
+
+        if(boardStates[1][4]!=null){
+            if(characterFromState(boardStates[1][4]) != challenge.charAt(1)){
+                return false;
+            }
+        }
+
+        if(boardStates[1][5]!=null){
+            if(characterFromState(boardStates[1][5]) != challenge.charAt(2)){
+                return false;
+            }
+        }
+
+        if(boardStates[2][3]!=null){
+            if(characterFromState(boardStates[2][3]) != challenge.charAt(3)){
+                return false;
+            }
+        }
+
+        if(boardStates[2][4]!=null){
+            if(characterFromState(boardStates[2][4]) != challenge.charAt(4)){
+                return false;
+            } 
+        }
+
+        if(boardStates[2][5] != null){
+            if(characterFromState(boardStates[2][5]) != challenge.charAt(5)){
+                return false;
+            }
+        }
+
+        if(boardStates[3][3]!=null){
+            if(characterFromState(boardStates[3][3]) != challenge.charAt(6)){
+                return false;
+            }
+        }
+
+        if(boardStates[3][4]!=null){
+            if(characterFromState(boardStates[3][4]) != challenge.charAt(7)){
+                return false;
+            }
+        }
+        if(boardStates[3][5] != null){
+                if(characterFromState(boardStates[3][5]) != challenge.charAt(8)){
+                    return false;
+                }
+            }
+
+        boardStates = new State[5][9];
+        return true;
+    }
+
+
+    /**
      * Given a set of all shapes which are unplaced, and all the places which have been placed, the function
      * generates a set of all possible shapes which can be validly placed.
-     * NOTE to other members: this function needs to be optimised so it generates less pieces for Task 6 to check for.
-     * This could possibly be achieved by taking in a row and column and not adding a piece to a set if its too far from the row and coluumn
      * @param pieces a set of all the unplaced shapes
      * @param placement a string representing all of the pieces which have been placed on the board
      * @return

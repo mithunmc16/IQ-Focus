@@ -53,10 +53,10 @@ declaration: >-
 # Sign *your* name and uids here. (Remove entries if you have fewer
 # than three members.)
 
-#signatures:
-#  - name: Benjamin Samuel
-#    uid: u6950152
-#  - name: Joanne Louie
-#    uid: u6949022
-#  - name: Mithun Comar
-#    uid: u6849970
+signatures:
+  - name: Benjamin Samuel
+    uid: u6950152
+  - name: Joanne Louie
+    uid: u6949022
+  - name: Mithun Comar
+    uid: u6849970

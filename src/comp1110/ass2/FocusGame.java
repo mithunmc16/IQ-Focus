@@ -1,6 +1,8 @@
 package comp1110.ass2;
 
 import static comp1110.ass2.BoardState.*;
+import static comp1110.ass2.State.*;
+
 
 import java.util.*;
 
@@ -25,6 +27,8 @@ public class FocusGame {
      * @param piecePlacement A string describing a piece placement
      * @return True if the piece placement is well-formed
      */
+
+    //Written by Benjamin Samuel
     static boolean isPiecePlacementWellFormed(String piecePlacement) {
         if (piecePlacement.length() != 4) {
             return false;
@@ -58,6 +62,8 @@ public class FocusGame {
      * @param placement A string describing a placement of one or more pieces
      * @return True if the placement is well-formed
      */
+
+    //Written by Benjamin Samuel
     public static boolean isPlacementStringWellFormed(String placement) {
         if (placement.length() % 4 == 0 && placement.length() >= 4 && placement.length() <= 40) {
             String[] placements = placement.split("(?<=\\G.{" + 4 + "})");
@@ -90,6 +96,8 @@ public class FocusGame {
      * @param placement A placement string
      * @return True if the placement sequence is valid
      */
+
+    //Written by Joanne Louie
     public static boolean isPlacementStringValid(String placement) {
         String[] placements = placement.split("(?<=\\G.{" + 4 + "})");
 
@@ -108,35 +116,29 @@ public class FocusGame {
         //The code below checks for overlap
         Shape[] shapeArr = new Shape[placements.length]; //Create an array to store the placements as Shapes
 
-        //fill the array with the Shape pieces
-        for(int i = 0; i < shapeArr.length; i++){
-            shapeArr[i] = new Shape(placements[i]);
-        }
-
         //update the shapes data structure ONLY IF there is no overlap between shapes
         for(int i = 0; i < placements.length; i++){
+            shapeArr[i] = new Shape(placements[i]);
             if(!isShapeOverlapping(placements[i])){
                 updateShapes(shapeArr[i]);
             }
         }
-
-        //Convert the shapes data structure into a list to make it easier to check for elements
-        List<Shape> listShapes = shapesAsList(shapes);
-        List<Shape> l = new ArrayList<>(); //a list which will only contain the shapes that were not overlapping
-
-        //add the non-overlapping shapes to the list
-        for(Shape s : Arrays.asList(shapeArr)){
-            if(listShapes.contains(s)){
-                l.add(s);
+        List<Shape> nonOverlappingShapes = new ArrayList<>(); //a list which will only contain the shapes that were not overlapping
+        Set<Shape> addedShapes = new HashSet<>(shapesAsList(shapes)); //A set of all shapes which have been added to the board
+        for(Shape s : shapeArr){
+            if(addedShapes.contains(s)){
+                nonOverlappingShapes.add(s);
             }
         }
         //clear the shapes data structure (since placements are not actually being placed)
         shapes = new Shape[5][9];
 
         //check if the list which contains non-overlapping shapes is the same size as the original placements array
-        return (l.size() == placements.length);
-            // FIXME Task 5
+        //if they're not the same, at least one of the shapes in the placement string was overlapping another
+        return (nonOverlappingShapes.size() == placements.length);
     }
+
+
 
 
     /**
@@ -164,69 +166,174 @@ public class FocusGame {
      * @param row      The location's row.
      * @return A set of viable piece placements, or null if there are none.
      */
+
+    //Written by Joanne Louie
     public static Set<String> getViablePiecePlacements(String placement, String challenge, int col, int row) {
-        Set<String> piecelist = new HashSet<>();
-        Set<Character> input = new HashSet<>();
-        int length = placement.length() / 4;
-        char[] placements = new char[length];
+        //Create a set of all the pieces which haven't been placed
+        Set<Character> unplacedPieces = getUnplacedPieces(placement);
+        Set<String> validPieces = new HashSet<>(); //Create the set which will contain all viable piece placements
 
-        char[] notin = new char[100];
+        for(char piece : unplacedPieces){
+            String shape;
+            for(int column = 0; column<8; column++){
+                for(int r = 0; r <5; r++){
+                    for(int orientation = 0; orientation < 4; orientation++){
+                        shape = piece + String.valueOf(column) + String.valueOf(r) + String.valueOf(orientation);
 
-        int x = 0;
-        for (int i = 0; i < placement.length(); i += 4) {
-            placements[x] = placement.charAt(i);//
-            x++;
+                        if(isPlacementOnBoard(shape)){
+                            updateStates(shape); //update the board states only if a placement is on the board
+                            if(boardStates[row][col] != null){ //check if after updating the board with a placement, it's covering the cell
+                                if(placementConsistentWithChallenge(shape,challenge)){ //check if the placement is consistent with the challenge
+                                    if(isPlacementStringValid(placement + shape)){
+                                        validPieces.add(shape);
+                                    }
+                                }
+                            }
+                        }
+                        boardStates = new State[5][9]; //remove all the states off the board to prepare for the next iteration
+
+                    }
+                }
+            }
         }
 
-
-        Arrays.sort(placements);
-
-
-        String r = Integer.toString(row);
-        String c = Integer.toString(col);
-        Set<Character> allset = new HashSet<>(Arrays.asList('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j'));
-
-        for (int i = 0; i < placements.length; i++) {
-            input.add(placements[i]);
+        if(validPieces.size() == 0){
+            return null;
         }
-        allset.remove(input);
-        //String[]  = new String[allset.size()];
-        Character[] not_in_placement = allset.toArray(new Character[allset.size()]);
-        Arrays.sort(not_in_placement);
-        for (int i = 0; i < not_in_placement.length; i++) {
-            String first = not_in_placement[i].toString();
-            for (int j = 0; j < 4; j++) {
-                String val = Integer.toString(j);
-                for (int k = 0; k <= row + 1; k++) {
-                    for (int l = 0; l <= col + 1; l++) {
-                        String a = first + l + k + val;
-                        String fin = placement + a;
-                        if (isPlacementStringValid(fin)) {
-                            piecelist.add(a);
 
+        return validPieces;
+    }
+
+    /**Generates a list of unplaced shapes given a placement string
+     *
+     * @param placement
+     * @return all unplaced shapes in a set
+     */
+    //Written by Mithun Comar, rewritten as a helper function for Task 6 by Joanne Louie
+    public static Set<Character> getUnplacedPieces(String placement){
+        Set<Character> placementPieces = new HashSet<>();
+
+        for(int i = 0; i < placement.length(); i+=4){
+            placementPieces.add(placement.charAt(i));
+        }
+
+        Set<Character> unplacedPieces = new HashSet<>(Arrays.asList('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j'));
+        for(char piece : placementPieces){
+            unplacedPieces.remove(piece);
+        }
+        return unplacedPieces;
+
+    }
+
+    /**
+     * placementConsistentWithChallenge returns true if the placement is consistent with the challenge
+     * or returns false if the placement is inconsistent with the challenge
+     */
+
+    public static boolean placementConsistentWithChallenge(String placement, String challenge){
+        State[][] boardWithChallenge = new State[5][9];
+
+        //Encodes the challenge into the appropriate locations of the board
+        boardWithChallenge[1][3] = stateFromCharacter(challenge.charAt(0));
+        boardWithChallenge[1][4] = stateFromCharacter(challenge.charAt(1));
+        boardWithChallenge[1][5] = stateFromCharacter(challenge.charAt(2));
+        boardWithChallenge[2][3] = stateFromCharacter(challenge.charAt(3));
+        boardWithChallenge[2][4] = stateFromCharacter(challenge.charAt(4));
+        boardWithChallenge[2][5] = stateFromCharacter(challenge.charAt(5));
+        boardWithChallenge[3][3] = stateFromCharacter(challenge.charAt(6));
+        boardWithChallenge[3][4] = stateFromCharacter(challenge.charAt(7));
+        boardWithChallenge[3][5] = stateFromCharacter(challenge.charAt(8));
+
+        updateStates(placement);
+
+        //Checks if a piece is consistent with a challenge if it has covered a challenge cell
+        if(boardStates[1][3]!=null){
+            if(characterFromState(boardStates[1][3]) != challenge.charAt(0)){
+                return false;
+            }
+        }
+
+        if(boardStates[1][4]!=null){
+            if(characterFromState(boardStates[1][4]) != challenge.charAt(1)){
+                return false;
+            }
+        }
+
+        if(boardStates[1][5]!=null){
+            if(characterFromState(boardStates[1][5]) != challenge.charAt(2)){
+                return false;
+            }
+        }
+
+        if(boardStates[2][3]!=null){
+            if(characterFromState(boardStates[2][3]) != challenge.charAt(3)){
+                return false;
+            }
+        }
+
+        if(boardStates[2][4]!=null){
+            if(characterFromState(boardStates[2][4]) != challenge.charAt(4)){
+                return false;
+            } 
+        }
+
+        if(boardStates[2][5] != null){
+            if(characterFromState(boardStates[2][5]) != challenge.charAt(5)){
+                return false;
+            }
+        }
+
+        if(boardStates[3][3]!=null){
+            if(characterFromState(boardStates[3][3]) != challenge.charAt(6)){
+                return false;
+            }
+        }
+
+        if(boardStates[3][4]!=null){
+            if(characterFromState(boardStates[3][4]) != challenge.charAt(7)){
+                return false;
+            }
+        }
+        if(boardStates[3][5] != null){
+                if(characterFromState(boardStates[3][5]) != challenge.charAt(8)){
+                    return false;
+                }
+            }
+
+        boardStates = new State[5][9];
+        return true;
+    }
+
+
+    /**
+     * Given a set of all shapes which are unplaced, and all the places which have been placed, the function
+     * generates a set of all possible shapes which can be validly placed.
+     * @param pieces a set of all the unplaced shapes
+     * @param placement a string representing all of the pieces which have been placed on the board
+     * @return
+     */
+
+    //Written by Mithun Comar, rewritten as a helper function for Task 6 by Joanne Louie
+    public static Set<String> generateValidUnplacedPieces(Set<Character> pieces, String placement){
+        Set<String> placementPieces = new HashSet<>();
+
+        for(char piece : pieces){
+            String shape;
+            for(int i = 0; i < 8; i++){ //i for column
+                for(int j = 0; j < 5; j++){ //j for row
+                    for(int o = 0; o < 4; o++){ //o for orientation
+                        shape = piece + String.valueOf(i) + String.valueOf(j) + String.valueOf(o);
+
+                        if(isPlacementStringValid(placement + shape)){
+                            placementPieces.add(shape);
                         }
                     }
                 }
             }
-        char[] Challenge = challenge.toCharArray();
-
-
-            //FIXME Task 6
-
         }
-            if(piecelist.isEmpty()){
-                return null;
-            }
-            return piecelist;
 
+        return placementPieces;
     }
-
-
-
-
-
-
-
 
 
     /**

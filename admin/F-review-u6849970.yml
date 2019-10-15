@@ -7,8 +7,8 @@ reviewer:
 # Write the name of the author of the code here.
 #
 author:
-  name:
-  uid:
+  name: Joanne Louie
+  uid: u6949022
 
 # Write the class or method being reviewed here.
 #
@@ -19,8 +19,9 @@ component: Task 5
 comments:
   - The code is well structured and concise
   - Sufficient comments are present.
-  - 
-  -
+  - The code is clear in places where there are no comments
+  - Local variables and methods are appropriately named
+ 
 
 
 

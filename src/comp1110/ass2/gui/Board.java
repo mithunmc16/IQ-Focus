@@ -19,6 +19,7 @@ import javafx.stage.Stage;
 import javafx.scene.Scene;
 
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -170,8 +171,8 @@ public class Board extends Application {
     private final Group shapes = new Group();
     private final Group board = new Group();
 //
-private final Group controls = new Group();
-private TextField textField;
+    private final Group controls = new Group();
+    private TextField textField;
 
 //
 
@@ -181,106 +182,10 @@ private TextField textField;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        primaryStage.setTitle("game");
+        primaryStage.setTitle("Game");
         Group root = new Group();
         Scene scene = new Scene(root, 933, 700);
 
-
-    /*Initialise dropShadow*/
-    private static DropShadow dropShadow;
-
-    {
-        dropShadow = new DropShadow();
-        dropShadow.setOffsetX(2.0);
-        dropShadow.setOffsetY(2.0);
-        dropShadow.setColor(Color.color(0, 0, 0, 0.4));
-    }
-//
-    Random rand = new Random();
-    int i = rand.nextInt(challenge.length);
-    String Challenge = challenge[i];
-
-
-    // FIXME Task 8: Implement challenges (you may use challenges and assets provided for you in comp1110.ass2.gui.assets: sq-b.png, sq-g.png, sq-r.png & sq-w.png)
-
-    //Written by Mithun Comar
-    void makeChallenge(String Challenge){// This block displays the challenge to be implemented for the game.
-
-    String input = null;
-    System.out.println(Challenge);
-    char[] clg = Challenge.toCharArray();
-
-    for (int j = 0; j<clg.length; j++){
-
-        switch(clg[j]){
-            case 'B': input = "sq-b";
-            break;
-            case 'G': input = "sq-g";
-            break;
-            case 'R': input = "sq-r";
-            break;
-            case 'W': input = "sq-w";
-
-        }
-        Image image = new Image(getClass().getResource(URI_BASE + input + ".png").toString());//selecting image from the directory
-        System.out.println(input);
-        ImageView img = new ImageView(image);
-
-        img.setOpacity(0.5);//setting the image to be opaque
-
-        int widthScale = (SQUARE_SIZE);
-        int heightScale = (SQUARE_SIZE);
-        img.setFitHeight(heightScale);
-        img.setFitWidth(widthScale);
-
-        img.setImage(image);
-        // placing images in the order [0][1][2]
-        //                             [3][4][5]
-        //                             [6][7][8]
-        //based on the challenge string eg. RRBWBRWGG
-        if (j == 0) {
-
-            img.setTranslateX(SQUARE_SIZE * 1);
-            img.setTranslateY(SQUARE_SIZE * 3);
-        }
-        else if (j == 1){
-            img.setTranslateX(SQUARE_SIZE * 2);
-            img.setTranslateY(SQUARE_SIZE * 3);
-        }
-        else if(j == 2){
-            img.setTranslateX(SQUARE_SIZE * 3);
-            img.setTranslateY(SQUARE_SIZE * 3);
-        }
-        else if (j == 3){
-            img.setTranslateX(SQUARE_SIZE * 1);
-            img.setTranslateY(SQUARE_SIZE * 4);
-        }
-        else if(j == 4){
-            img.setTranslateX(SQUARE_SIZE * 2);
-            img.setTranslateY(SQUARE_SIZE * 4);
-        }
-        else if(j == 5){
-            img.setTranslateX(SQUARE_SIZE * 3);
-            img.setTranslateY(SQUARE_SIZE * 4);
-        }
-        else if (j == 6){
-            img.setTranslateX(SQUARE_SIZE * 1);
-            img.setTranslateY(SQUARE_SIZE * 5);
-        }
-        else if(j == 7){
-            img.setTranslateX(SQUARE_SIZE * 2);
-            img.setTranslateY(SQUARE_SIZE * 5);
-        }
-        else{
-            img.setTranslateX(SQUARE_SIZE * 3);
-            img.setTranslateY(SQUARE_SIZE * 5);
-        }
-
-        root.getChildren().add(img);
-    }
-
-}
-// end of task 8
 
         ArrayList<Character> unplacedPieces = new ArrayList<>(Arrays.asList('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j'));
         Image[] images = new Image[10];
@@ -297,8 +202,13 @@ private TextField textField;
         board.setFitHeight(BOARD_HEIGHT);
         board.setImage(b);
 
-
         root.getChildren().add(board);
+
+        for (ImageView i : makeChallenge(Challenge)) {
+            root.getChildren().add(i);
+
+        };
+
 
         for (int i = 0; i < 10; i ++) {
             ImageView piece = new ImageView();
@@ -382,10 +292,97 @@ private TextField textField;
 
         DraggableShapes(String placement) {
             super(placement);
-            }
+        }
+
+    }
+
+//
+    Random rand = new Random();
+    int i = rand.nextInt(challenge.length);
+    String Challenge = challenge[i];
+
+
+    // FIXME Task 8: Implement challenges (you may use challenges and assets provided for you in comp1110.ass2.gui.assets: sq-b.png, sq-g.png, sq-r.png & sq-w.png)
+
+    //Written by Mithun Comar
+     ImageView[] makeChallenge(String Challenge){ // This block displays the challenge to be implemented for the game.
+
+    String input = null;
+    System.out.println(Challenge);
+    ImageView[] challengeArray = new ImageView[9];
+    char[] clg = Challenge.toCharArray();
+
+    for (int j = 0; j<clg.length; j++){
+
+        switch(clg[j]){
+            case 'B': input = "sq-b";
+            break;
+            case 'G': input = "sq-g";
+            break;
+            case 'R': input = "sq-r";
+            break;
+            case 'W': input = "sq-w";
 
         }
+        Image image = new Image(getClass().getResource(URI_BASE + input + ".png").toString()); //selecting image from the directory
+        ImageView img = new ImageView(image);
+
+        img.setOpacity(0.5); //setting the image to be opaque
+
+        img.setFitHeight(SQUARE_HEIGHT);
+        img.setFitWidth(SQUARE_WIDTH);
+
+        // placing images in the order [0][1][2]
+        //                             [3][4][5]
+        //                             [6][7][8]
+        // based on the challenge string eg. RRBWBRWGG
+
+        if (j == 0) {
+
+            img.setTranslateX(42 + X_SHIFT + SQUARE_WIDTH * 3);
+            img.setTranslateY(87 + SQUARE_HEIGHT * 1);
+        }
+        else if (j == 1){
+            img.setTranslateX(42 + X_SHIFT + SQUARE_WIDTH * 4);
+            img.setTranslateY(87 + SQUARE_HEIGHT * 1);
+        }
+        else if(j == 2){
+            img.setTranslateX(42 + X_SHIFT + SQUARE_WIDTH * 5);
+            img.setTranslateY(87 + SQUARE_HEIGHT * 1);
+        }
+        else if (j == 3){
+            img.setTranslateX(42 + X_SHIFT + SQUARE_WIDTH * 3);
+            img.setTranslateY(87 + SQUARE_HEIGHT * 2);
+        }
+        else if(j == 4){
+            img.setTranslateX(42 + X_SHIFT + SQUARE_WIDTH * 4);
+            img.setTranslateY(87 + SQUARE_HEIGHT * 2);
+        }
+        else if(j == 5){
+            img.setTranslateX(42 + X_SHIFT + SQUARE_WIDTH * 5);
+            img.setTranslateY(87 + SQUARE_HEIGHT * 2);
+        }
+        else if (j == 6){
+            img.setTranslateX(42 + X_SHIFT + SQUARE_WIDTH * 3);
+            img.setTranslateY(87 + SQUARE_HEIGHT * 3);
+        }
+        else if(j == 7){
+            img.setTranslateX(42 + X_SHIFT + SQUARE_WIDTH * 4);
+            img.setTranslateY(87 + SQUARE_HEIGHT * 3);
+        }
+        else{
+            img.setTranslateX(42 + X_SHIFT + SQUARE_WIDTH * 5);
+            img.setTranslateY(87 + SQUARE_HEIGHT * 3);
+        }
+        img.setImage(image);
+        challengeArray[j] = img;
     }
+    return challengeArray;
+}
+    // end of task 8
+
+
+
 
 
 
@@ -401,13 +398,5 @@ private TextField textField;
 
 
 
-    @Override
-    public void start(Stage primaryStage) {
-        primaryStage.setTitle("FocusGame Viewer");
-        Scene scene = new Scene(root, BOARD_WIDTH, BOARD_HEIGHT);
 
-        makeChallenge(Challenge);
-        primaryStage.setScene(scene);
-        primaryStage.show();
     }
-}

@@ -43,18 +43,17 @@ public class Viewer extends Application {
      * @param placement A valid placement string
      */
     void makePlacement(String placement) {
-
-        System.out.println((FocusGame.isPlacementStringValid(placement)));// to check if placement is valid
         root.getChildren().clear();
-
         root.getChildren().add(controls);
+        // output image only if placement string is valid && well formed
 
-        //output image only of placement string is valid && well formed
 
-        if (FocusGame.isPlacementStringValid(placement) && FocusGame.isPlacementStringWellFormed(placement)) {
 
-            int X = ((VIEWER_WIDTH - (COLUMNS * SQUARE_SIZE))/4);//X and Y coordinates initialised
-            int Y = ((VIEWER_HEIGHT - (ROWS * SQUARE_SIZE))/4);
+        if (FocusGame.isPlacementStringValid(placement)) {
+
+            // X and Y coordinates initialised
+            int X = ((VIEWER_WIDTH - (COLUMNS * SQUARE_SIZE)) / 2);
+            int Y = ((VIEWER_HEIGHT - (ROWS * SQUARE_SIZE)) / 2);
 
             for (int i = 0; i < placement.length(); i += 4) {
                 String placements = placement.substring(i, i + 4);//
@@ -68,7 +67,7 @@ public class Viewer extends Application {
 
                 ImageView img = new ImageView();
                 img.setImage(image);
-//rotating images based on character 3
+                // rotating images based on character 3
                 int r = rotation;
 
                 img.setRotate(r * 90);
@@ -80,7 +79,7 @@ public class Viewer extends Application {
 
                 if (obj == 'b' || obj == 'c' || obj == 'j') {
                     width = 4;
-                } else if (obj == 'a' || obj == 'd' || obj == 'e' || obj == 'f' || obj == 'g' || obj == 'h') {
+                } else if (obj == 'a' ||  obj == 'd' || obj == 'e' || obj == 'f' || obj == 'g' || obj == 'h') {
                     width = 3;
                 }else {
                     width = 2;
@@ -95,7 +94,7 @@ public class Viewer extends Application {
                     height = 1;
                 }
 
-//scaling image to fit in the stage.
+                //scaling image to fit in the stage.
                 int widthScale = (width * SQUARE_SIZE);
                 int heightScale = (height * SQUARE_SIZE);
 
@@ -149,6 +148,7 @@ public class Viewer extends Application {
         root.getChildren().add(controls);
 
         makeControls();
+
 
         primaryStage.setScene(scene);
         primaryStage.show();

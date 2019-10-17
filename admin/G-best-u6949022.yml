@@ -43,9 +43,9 @@ declaration: >-
 # I wish to submit the following methods as entirely my own (remove this if
 # you want to just submit classes):
 method:
-   - public static boolean isPlacementStringValid(String placement)
-   - public static Set<String> getViablePiecePlacements(String placement, String challenge, int col, int row)
-   - public static Set<Character> getUnplacedPieces(String placement)
+   - isPlacementStringValid(String placement)
+   - getViablePiecePlacements(String placement, String challenge, int col, int row)
+   - getUnplacedPieces(String placement)
 
 # sign *your* name and uid here
 name: Joanne Louie

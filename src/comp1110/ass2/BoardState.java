@@ -1,8 +1,6 @@
 package comp1110.ass2;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 import static comp1110.ass2.Orientation.*;
 import static comp1110.ass2.ShapeType.*;
@@ -19,6 +17,14 @@ public class BoardState {
     hence a piece cannot be placed there.
      */
     public static State[][] boardStates = new State[5][9];
+
+    public static String[][] boardLocations = {
+            {"00","10","20","30","40","50","60","70","80"},
+            {"01","11","21","31","41","51","61","71","81"},
+            {"02","12","22","32","42","52","62","72","82"},
+            {"03","13","23","33","43","53","63","73","83"},
+            {null,"14","24","34","44","54","64","74",null}
+    };
 
     /**
      * The updateStates function updates every cell in the boardStates array which represents the gameboard,
@@ -163,17 +169,6 @@ public class BoardState {
     The entries refer to the Shape instance occupying an indent on the board.
      */
     public static Shape[][] shapes = new Shape[5][9];
-
-    /**
-    Add a new shape placement to the board state.
-     */
-    public static void addShapeToBoard(String placement) {
-        /* create the the shape*/
-        Shape shape = new Shape(placement);
-
-        /* update the data structure for the indents that compose the shape */
-        updateShapes(shape);
-    }
 
 
     /**
@@ -1046,6 +1041,267 @@ public class BoardState {
         return true;
     }
 
+    public static Set<String> getOccupiedLocations(String placement){
+        Set<String> occupiedLocations = new HashSet<>();
+        Shape shape = new Shape(placement);
+        ShapeType type = shape.getShapeType();
+        Location location = shape.getLocation();
+        int x = location.getX();
+        int y = location.getY();
+        Orientation orientation = shape.getOrientation();
+
+        switch(type){
+            case A:
+                if(orientation == EAST){
+                    for(int i = 0; i <3; i++){
+                        occupiedLocations.add(boardLocations[y][x+i]);
+                    }
+                    occupiedLocations.add(boardLocations[y+1][x+1]);
+                }
+                else if(orientation == SOUTH){
+                    occupiedLocations.add(boardLocations[y+1][x]);
+                    for(int i = 0; i < 3; i++){
+                        occupiedLocations.add(boardLocations[y+i][x+1]);
+                    }
+                }
+                else if(orientation == WEST){
+                    occupiedLocations.add(boardLocations[y][x+1]);
+                    for(int i = 0; i<3; i++){
+                        occupiedLocations.add(boardLocations[y+1][x+i]);
+                    }
+                }
+                else{
+                    occupiedLocations.add(boardLocations[y+1][x+1]);
+                    for(int i = 0; i <3; i++){
+                        occupiedLocations.add(boardLocations[y+i][x]);
+                    }
+                }
+                break;
+            case B:
+                if(orientation == EAST){
+                    occupiedLocations.add(boardLocations[y+1][x]);
+                    occupiedLocations.add(boardLocations[y+1][x+1]);
+                    for(int i = 1; i < 4; i++){
+                        occupiedLocations.add(boardLocations[y][x+i]);
+                    }
+                }
+                else if(orientation == SOUTH){
+                    occupiedLocations.add(boardLocations[y][x]);
+                    occupiedLocations.add(boardLocations[y+1][x]);
+                    for(int i = 1; i < 4; i++){
+                        occupiedLocations.add(boardLocations[y+i][x+1]);
+                    }
+                }
+                else if(orientation == WEST){
+                    occupiedLocations.add(boardLocations[y][x+2]);
+                    occupiedLocations.add(boardLocations[y][x+3]);
+                    for(int i = 0; i < 3; i++){
+                        occupiedLocations.add(boardLocations[y+1][x+i]);
+                    }
+                }
+                else{
+                    occupiedLocations.add(boardLocations[y+2][x+1]);
+                    occupiedLocations.add(boardLocations[y+3][x+1]);
+                    for(int i = 0; i < 3; i++){
+                        occupiedLocations.add(boardLocations[y+i][x]);
+                    }
+                }
+                break;
+            case C:
+                if(orientation == EAST){
+                    occupiedLocations.add(boardLocations[y][x+2]);
+                    for(int i = 0; i < 4; i++){
+                        occupiedLocations.add(boardLocations[y+1][x+i]);
+                    }
+                }
+                else if(orientation == SOUTH){
+                    occupiedLocations.add(boardLocations[y+2][x+1]);
+                    for(int i = 0; i < 4; i++){
+                        occupiedLocations.add(boardLocations[y+i][x]);
+                    }
+                }
+                else if(orientation == WEST){
+                    occupiedLocations.add(boardLocations[y+1][x+1]);
+                    for(int i = 0; i < 4; i++){
+                        occupiedLocations.add(boardLocations[y][x+i]);
+                    }
+                }
+                else{
+                    occupiedLocations.add(boardLocations[y+1][x]);
+                    for(int i = 0; i < 4; i++){
+                        occupiedLocations.add(boardLocations[y+i][x+1]);
+                    }
+                }
+                break;
+            case D:
+                if(orientation == EAST){
+                    occupiedLocations.add(boardLocations[y+1][x+2]);
+                    for(int i = 0; i<3;i++){
+                        occupiedLocations.add(boardLocations[y][x+i]);
+                    }
+                }
+                else if(orientation == SOUTH){
+                    occupiedLocations.add(boardLocations[y+2][x]);
+                    for(int i = 0; i<3;i++){
+                        occupiedLocations.add(boardLocations[y+i][x+1]);
+                    }
+                }
+                else if(orientation == WEST){
+                    occupiedLocations.add(boardLocations[y][x]);
+                    for(int i = 0; i<3;i++){
+                        occupiedLocations.add(boardLocations[y+1][x+i]);
+                    }
+                }
+                else{
+                    occupiedLocations.add(boardLocations[y][x+1]);
+                    for(int i = 0; i<3;i++){
+                        occupiedLocations.add(boardLocations[y+i][x]);
+                    }
+                }
+                break;
+            case E:
+                if(orientation == EAST){
+                    occupiedLocations.add(boardLocations[y+1][x]); occupiedLocations.add(boardLocations[y+1][x+1]);
+                    for(int i = 0; i<3;i++){
+                        occupiedLocations.add(boardLocations[y][x+i]);
+                    }
+                }
+                else if(orientation == SOUTH){
+                    occupiedLocations.add(boardLocations[y][x]); occupiedLocations.add(boardLocations[y+1][x]);
+                    for(int i = 0; i<3;i++){
+                        occupiedLocations.add(boardLocations[y+i][x+1]);
+                    }
+                }
+                else if(orientation == WEST){
+                    occupiedLocations.add(boardLocations[y][x+1]); occupiedLocations.add(boardLocations[y][x+2]);
+                    for(int i = 0; i<3;i++){
+                        occupiedLocations.add(boardLocations[y+1][x+i]);
+                    }
+                }
+                else{
+                    occupiedLocations.add(boardLocations[y+1][x+1]); occupiedLocations.add(boardLocations[y+2][x+1]);
+                    for(int i = 0; i<3;i++){
+                        occupiedLocations.add(boardLocations[y+i][x]);
+                    }
+                }
+                break;
+            case F:
+                if(orientation == EAST || orientation == WEST){
+                    for(int i = 0; i<3; i++){
+                        occupiedLocations.add(boardLocations[y][x+i]);
+                    }
+                }
+                else{
+                    for(int i = 0; i<3; i++){
+                        occupiedLocations.add(boardLocations[y+i][x]);
+                    }
+                }
+                break;
+            case G:
+                if(orientation == EAST || orientation == WEST){
+                    occupiedLocations.add(boardLocations[y][x]); occupiedLocations.add(boardLocations[y][x+1]);
+                    occupiedLocations.add(boardLocations[y+1][x+1]); occupiedLocations.add(boardLocations[y+1][x+2]);
+                }
+                else{
+                    occupiedLocations.add(boardLocations[y][x+1]); occupiedLocations.add(boardLocations[y+1][x+1]);
+                    occupiedLocations.add(boardLocations[y+1][x]); occupiedLocations.add(boardLocations[y+2][x]);
+                }
+                break;
+            case H:
+                if(orientation == EAST){
+                    for(int i = 0; i <3; i++){
+                        occupiedLocations.add(boardLocations[y][x+i]);
+                        occupiedLocations.add(boardLocations[y+i][x]);
+                    }
+                }
+                else if(orientation == SOUTH){
+                    for(int i = 0; i <3; i++){
+                        occupiedLocations.add(boardLocations[y][x+i]);
+                        occupiedLocations.add(boardLocations[y+i][x+2]);
+                    }
+                }
+                else if(orientation == WEST){
+                    for(int i = 0; i <3; i++){
+                        occupiedLocations.add(boardLocations[y+2][x+i]);
+                        occupiedLocations.add(boardLocations[y+i][x+2]);
+                    }
+                }
+                else{
+                    for(int i = 0; i <3; i++){
+                        occupiedLocations.add(boardLocations[y+i][x]);
+                        occupiedLocations.add(boardLocations[y+2][x+i]);
+                    }
+                }
+                break;
+            case I:
+                if(orientation == EAST){
+                    occupiedLocations.add(boardLocations[y][x]);
+                    occupiedLocations.add(boardLocations[y][x+1]);
+                    occupiedLocations.add(boardLocations[y+1][x+1]);
+                }
+                else if(orientation == SOUTH){
+                    occupiedLocations.add(boardLocations[y][x+1]);
+                    occupiedLocations.add(boardLocations[y+1][x]);
+                    occupiedLocations.add(boardLocations[y+1][x+1]);
+                }
+                else if(orientation == WEST){
+                    occupiedLocations.add(boardLocations[y][x]);
+                    occupiedLocations.add(boardLocations[y+1][x]);
+                    occupiedLocations.add(boardLocations[y+1][x+1]);
+                }
+                else{
+                    occupiedLocations.add(boardLocations[y][x]);
+                    occupiedLocations.add(boardLocations[y][x+1]);
+                    occupiedLocations.add(boardLocations[y+1][x]);
+                }
+                break;
+            case J:
+                if(orientation == EAST){
+                    occupiedLocations.add(boardLocations[y+1][x]);
+                    for(int i = 0; i < 4; i++){
+                        occupiedLocations.add(boardLocations[y][x+i]);
+                    }
+                }
+                else if(orientation == SOUTH){
+                    occupiedLocations.add(boardLocations[y][x]);
+                    for(int i = 0; i < 4; i++){
+                        occupiedLocations.add(boardLocations[y+i][x+1]);
+                    }
+                }
+                else if(orientation == WEST){
+                    occupiedLocations.add(boardLocations[y][x+3]);
+                    for(int i = 0; i < 4; i++){
+                        occupiedLocations.add(boardLocations[y+1][x+i]);
+                    }
+                }
+                else{
+                    occupiedLocations.add(boardLocations[y+3][x+1]);
+                    for(int i = 0; i < 4; i++){
+                        occupiedLocations.add(boardLocations[y+i][x]);
+                    }
+                }
+                break;
+        }
+        return occupiedLocations;
+
+    }
+
+    public static void main(String[] args) {
+        System.out.println(getOccupiedLocations("a321")); //33,42,43,44 (Y)
+        System.out.println(getOccupiedLocations("a703")); //70,71,72,81 (Y)
+        System.out.println(getOccupiedLocations("b511")); //51,52,62,63,64 (Y)
+        System.out.println(getOccupiedLocations("b603")); //60,61,62,72,73 (Y)
+        System.out.println(getOccupiedLocations("e622"));//63,72,73,82,83 (Y)
+        System.out.println(getOccupiedLocations("d321")); //34,42,43,44 (Y)
+        System.out.println(getOccupiedLocations("c032")); //03,13,23,33,14 (Y)
+        System.out.println(getOccupiedLocations("g622")); //62,72,73,83 (Y)
+        System.out.println(getOccupiedLocations("h410")); //41,51,61,42,43 (Y)
+        System.out.println(getOccupiedLocations("i733")); //73,83,74 (Y)
+        System.out.println(getOccupiedLocations("j613")); //61,62,63,64,74 (Y)
+    }
+
+
+
     //Full credit goes to Keppil on stackoverflow
     // https://stackoverflow.com/questions/11447780/convert-two-dimensional-array-to-list-in-java
     // This functions turns a 2D array into a list
@@ -1057,5 +1313,7 @@ public class BoardState {
         return lists;
     }
 }
+
+
 
 

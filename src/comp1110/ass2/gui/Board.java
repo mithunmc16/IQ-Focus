@@ -3,10 +3,10 @@ package comp1110.ass2.gui;
 import comp1110.ass2.FocusGame;
 import javafx.animation.FadeTransition;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.scene.Group;
-import javafx.scene.Scene;
+import javafx.scene.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
@@ -168,14 +168,14 @@ public class Board extends Application {
     private static final int BOARD_HEIGHT = 463;
     private static final double SQUARE_WIDTH = 70;
     private static final double SQUARE_HEIGHT = 70;
-    private static final double X_SHIFT = 106;
+    private static final double X_SHIFT = 80;
     private static final long ROTATION_THRESHOLD = 50; // Allow rotation every 50 ms
 
-    private final Group shapes = new Group();
-    private final Group board = new Group();
+    private final Group root = new Group();
+    private Group game = new Group();
+
     //
     private final Group controls = new Group();
-    private TextField textField;
     private final Slider difficulty = new Slider();
 //
 
@@ -185,47 +185,21 @@ public class Board extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         primaryStage.setTitle("Game");
-        Group root = new Group();
         Scene scene = new Scene(root, 933, 700);
 
 
         // Creates the board
-        ImageView board = new ImageView();
-        Image b = new Image(getClass().getResource(URI_BASE + "board.png").toString());
-        board.setLayoutX(0 + X_SHIFT);
-        board.setLayoutY(0);
-        board.setFitWidth(BOARD_WIDTH);
-        board.setFitHeight(BOARD_HEIGHT);
-        board.setImage(b);
-
-        root.getChildren().add(board);
+        generateBoard();
 
         for (ImageView i : makeChallenge(Challenge)) {
             root.getChildren().add(i);
-
         }
         ;
         // Generates the draggable pieces
-        Shapes[] start = new Shapes[10];
-        ArrayList<Character> unplacedPieces = new ArrayList<>(Arrays.asList('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j'));
-        for (int i = 0; i < 10; i++) {
-            if (i > 4) {
-                double x = 2 * (i - 5);
-                double y = ((BOARD_HEIGHT - 87) / SQUARE_HEIGHT) + 2;
-                start[i] = new DraggableShapes(unplacedPieces.get(i), x, y, 0);
-            } else {
-                double x = 2 * i;
-                double y = ((BOARD_HEIGHT - 87) / SQUARE_HEIGHT) + 0.5;
-                start[i] = new DraggableShapes(unplacedPieces.get(i), x, y, 0);
-            }
-        }
-        // Adds draggable pieces to board
-        for (Shapes ds : start) {
-            ds.setFitWidth(SQUARE_WIDTH);
-            ds.setFitHeight(SQUARE_HEIGHT);
-            root.getChildren().add(ds);
-        }
+        generatePieces();
         makeControls();
+        root.getChildren().add(controls);
+
         scene.setRoot(root);
         scene.setFill(BEIGE);
         primaryStage.setScene(scene);
@@ -369,10 +343,10 @@ public class Board extends Application {
 
 
             this.setOnScroll(event -> {
-                if (System.currentTimeMillis() - lastRotationTime > ROTATION_THRESHOLD){
+                if (System.currentTimeMillis() - lastRotationTime > ROTATION_THRESHOLD) {
                     lastRotationTime = System.currentTimeMillis();
 
-                    for (int i = 0; i < 4; i ++) {
+                    for (int i = 0; i < 4; i++) {
                         images[i] = new Image(getClass().getResource(URI_BASE + piece + i + ".png").toString());
                     }
                     this.orientation = (this.orientation + 1) % 4;
@@ -409,7 +383,8 @@ public class Board extends Application {
                             this.setFitHeight(WIDTH * SQUARE_HEIGHT);
                     }
                     event.consume();
-            }});
+                }
+            });
             this.setOnMouseReleased(event -> {
                 int WIDTH = 0;
                 int HEIGHT = 0;
@@ -557,29 +532,96 @@ public class Board extends Application {
         }
         return challengeArray;
     }
+
     // end of task 8
+    private void restartGame() {
+        try {
+            Random rand = new Random();
+            int i = rand.nextInt((int) challenge.length / 3);
+            String Challenge = challenge[i + ((int) difficulty.getValue() - 1) * 40];
+            root.getChildren().clear();
+
+            generateBoard();
+            generatePieces();
+            root.getChildren().add(controls);
+            
+            for (ImageView image : makeChallenge(Challenge)) {
+                root.getChildren().add(image);
+            }
+            ;
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+            Platform.exit();
+
+        }
+    }
+
     private void makeControls() {
+        Button button = new Button("Restart");
+        button.setLayoutX(BOARD_WIDTH + X_SHIFT + 30);
+        button.setLayoutY(BOARD_HEIGHT + 130);
+        button.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                restartGame();
+            }
+        });
+        controls.getChildren().add(button);
         difficulty.setMin(1);
-        difficulty.setMax(4);
+        difficulty.setMax(3);
         difficulty.setValue(0);
         difficulty.setShowTickLabels(true);
         difficulty.setShowTickMarks(true);
         difficulty.setMajorTickUnit(1);
-        difficulty.setMinorTickCount(1);
+        difficulty.setMinorTickCount(0);
         difficulty.setSnapToTicks(true);
 
-        difficulty.setLayoutX(BOARD_WIDTH + X_SHIFT);
+        difficulty.setLayoutX(BOARD_WIDTH + X_SHIFT - 20);
         difficulty.setLayoutY(BOARD_HEIGHT + 87);
         difficulty.toFront();
         controls.getChildren().add(difficulty);
 
         final Label difficultyCaption = new Label("Difficulty:");
         difficultyCaption.setTextFill(Color.GREY);
-        difficultyCaption.setLayoutX(BOARD_WIDTH + 42 + X_SHIFT + 70);
-        difficultyCaption.setLayoutY(BOARD_HEIGHT / 2);
+        difficultyCaption.setLayoutX(BOARD_WIDTH + X_SHIFT - 20);
+        difficultyCaption.setLayoutY(BOARD_HEIGHT + 65);
         controls.getChildren().add(difficultyCaption);
     }
 
+    void generatePieces() {
+        Shapes[] start = new Shapes[10];
+        ArrayList<Character> unplacedPieces = new ArrayList<>(Arrays.asList('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j'));
+        for (int i = 0; i < 10; i++) {
+            if (i > 4) {
+                double x = 2 * (i - 5);
+                double y = ((BOARD_HEIGHT - 87) / SQUARE_HEIGHT) + 2;
+                start[i] = new DraggableShapes(unplacedPieces.get(i), x, y, 0);
+            } else {
+                double x = 2 * i;
+                double y = ((BOARD_HEIGHT - 87) / SQUARE_HEIGHT) + 0.5;
+                start[i] = new DraggableShapes(unplacedPieces.get(i), x, y, 0);
+            }
+        }
+        // Adds draggable pieces to board
+        for (Shapes ds : start) {
+            ds.setFitWidth(SQUARE_WIDTH);
+            ds.setFitHeight(SQUARE_HEIGHT);
+            root.getChildren().add(ds);
+        }
+    }
+
+
+    void generateBoard() {
+        ImageView board = new ImageView();
+        Image b = new Image(getClass().getResource(URI_BASE + "board.png").toString());
+        board.setLayoutX(0 + X_SHIFT);
+        board.setLayoutY(0);
+        board.setFitWidth(BOARD_WIDTH);
+        board.setFitHeight(BOARD_HEIGHT);
+        board.setImage(b);
+
+        root.getChildren().add(board);
+    }
 
     // FIXME Task 10: Implement hints
 

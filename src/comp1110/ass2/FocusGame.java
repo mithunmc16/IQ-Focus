@@ -99,47 +99,37 @@ public class FocusGame {
 
     //Written by Joanne Louie
     public static boolean isPlacementStringValid(String placement) {
-        String[] placements = placement.split("(?<=\\G.{" + 4 + "})");
 
         //Check if a placement string is well formed, if not, return "false"
-        if(!isPlacementStringWellFormed(placement)){
+        if (!isPlacementStringWellFormed(placement)) {
             return false;
         }
 
+        String[] placements = placement.split("(?<=\\G.{" + 4 + "})");
+
         // Check if every placement is on the board
-        for(String p : placements) {
+        for (String p : placements) {
             if (!isPlacementOnBoard(p)) {
                 return false;
             }
         }
 
-        //The code below checks for overlap
-        Shape[] shapeArr = new Shape[placements.length]; //Create an array to store the placements as Shapes
+        //counts the number of non-overlapping shapes
+        int count = 0;
+        for (String s : placements) {
+            if (!isShapeOverlapping(s)) {
+                Shape shape = new Shape(s);
+                updateShapes(shape);
+                count++;
+            }
+        }
 
-        //update the shapes data structure ONLY IF there is no overlap between shapes
-        for(int i = 0; i < placements.length; i++){
-            shapeArr[i] = new Shape(placements[i]);
-            if(!isShapeOverlapping(placements[i])){
-                updateShapes(shapeArr[i]);
-            }
-        }
-        List<Shape> nonOverlappingShapes = new ArrayList<>(); //a list which will only contain the shapes that were not overlapping
-        Set<Shape> addedShapes = new HashSet<>(shapesAsList(shapes)); //A set of all shapes which have been added to the board
-        for(Shape s : shapeArr){
-            if(addedShapes.contains(s)){
-                nonOverlappingShapes.add(s);
-            }
-        }
-        //clear the shapes data structure (since placements are not actually being placed)
+        //clears the shapes data structure (since placements aren't actually being placed)
         shapes = new Shape[5][9];
 
-        //check if the list which contains non-overlapping shapes is the same size as the original placements array
-        //if they're not the same, at least one of the shapes in the placement string was overlapping another
-        return (nonOverlappingShapes.size() == placements.length);
+        //checks if the number of non-overlapping shapes is the same as the array with all the shapes in it
+        return count == placements.length;
     }
-
-
-
 
     /**
      * Given a string describing a placement of pieces and a string describing
@@ -304,36 +294,35 @@ public class FocusGame {
         return true;
     }
 
-
     /**
-     * Given a set of all shapes which are unplaced, and all the places which have been placed, the function
-     * generates a set of all possible shapes which can be validly placed.
-     * @param pieces a set of all the unplaced shapes
-     * @param placement a string representing all of the pieces which have been placed on the board
-     * @return
+     * A set of pieces which cause dead cells on the board
+     * This is used instead of a function which checks for dead cells since checking if a HashSet contains an element is
+     * O(1) in complexity.
      */
 
-    //Written by Mithun Comar, rewritten as a helper function for Task 6 by Joanne Louie
-    public static Set<String> generateValidUnplacedPieces(Set<Character> pieces, String placement){
-        Set<String> placementPieces = new HashSet<>();
+    static Set<String> deadCells = new HashSet<>(Arrays.asList(
+            "a001", "a002", "a703",
+            "b000", "b701", "b002", "b703",
+            "c000", "c701", "c532", "c432", "c003",
+            "d030", "d001", "d602", "d723",
+            "e002", "e703",
+            "g001", "g600", "g602", "g003",
+            "h002", "h603",
+            "i001", "i702",
+            "j530", "j011"));
 
-        for(char piece : pieces){
-            String shape;
-            for(int i = 0; i < 8; i++){ //i for column
-                for(int j = 0; j < 5; j++){ //j for row
-                    for(int o = 0; o < 4; o++){ //o for orientation
-                        shape = piece + String.valueOf(i) + String.valueOf(j) + String.valueOf(o);
-
-                        if(isPlacementStringValid(placement + shape)){
-                            placementPieces.add(shape);
-                        }
-                    }
-                }
-            }
-        }
-
-        return placementPieces;
-    }
+    /**
+     * A set of all the locations on the board
+     * A set in the getSolution is initialised to this, and then gradually removes locations as pieces are added
+     * to the solution string
+     */
+    static Set<String> locations = new HashSet<>(Arrays.asList(
+            "00", "10", "20", "30", "40", "50", "60", "70", "80",
+            "01", "11", "21", "31", "41", "51", "61", "71", "81",
+            "02", "12", "22", "32", "42", "52", "62", "72", "82",
+            "03", "13", "23", "33", "43", "53", "63", "73", "83",
+            "14", "24", "34", "44", "54", "64", "74"
+    ));
 
 
     /**
@@ -341,19 +330,249 @@ public class FocusGame {
      *
      * A given challenge can only solved with a single placement of pieces.
      *
-     * Since some piece placements ca   n be described two ways (due to symmetry),
+     * Since some piece placements can be described two ways (due to symmetry),
      * you need to use a canonical encoding of the placement, which means you
      * must:
      * - Order the placement sequence by piece IDs
      * - If a piece exhibits rotational symmetry, only return the lowest
-     *   orientation value (0 or 1)
+     * orientation value (0 or 1)
      *
      * @param challenge A challenge string.
      * @return A placement string describing a canonical encoding of the solution to
      * the challenge.
      */
     public static String getSolution(String challenge) {
-        // FIXME Task 9: determine the solution to the game, given a particular challenge
+
         return null;
     }
+
+    public static String solutions(String challenge) {
+        LinkedList<Character> pieces = new LinkedList<>();
+        pieces.add('g');
+        pieces.add('f');
+        pieces.add('c');
+        pieces.add('b');
+        pieces.add('e');
+        pieces.add('j');
+        pieces.add('h');
+        pieces.add('d');
+        pieces.add('a');
+        pieces.add('i');
+        LinkedList<String> unusedlocations = new LinkedList<>();
+        unusedlocations.addAll(locations);
+        int orientation;
+        StringBuilder builtSolution = new StringBuilder(40);
+
+        for (char shape : pieces) {
+            for (String location : unusedlocations) {
+                if (shape == 'g' || shape == 'f') {
+                    orientation = 2;
+                } else {
+                    orientation = 4;
+                }
+
+                for (int i = 0; i < orientation; i++) {
+                    String s = shape + location + i;
+                    if (!deadCells.contains(s)) {
+                        if (isPlacementOnBoard(s)) {
+                            if (placementConsistentWithChallenge(s, challenge)) {
+                                String allPlacements = builtSolution.toString() + s;
+                                if (placementConsistentWithChallenge(allPlacements, challenge)) {
+                                    if (isPlacementStringValid(allPlacements)) {
+                                        builtSolution.append(s);
+                                        Set<String> hSet = new HashSet<>(unusedlocations);
+                                        removeOccupied(hSet, s);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    boardStates = new State[5][9]; //remove all the states off the board to prepare for the next iteration
+                }
+            }
+        }
+        return sortSolution(builtSolution.toString());
+
+    }
+
+    /**
+     * Sorts the solution string by using the sort method from Collections
+     */
+    public static String sortSolution(String solution) {
+        String[] placements = solution.split("(?<=\\G.{" + 4 + "})");
+        List<String> sortedPlacements = Arrays.asList(placements);
+        String sol = "";
+        Collections.sort(sortedPlacements);
+        for (String s : sortedPlacements) {
+            sol = sol + s;
+        }
+
+        return sol;
+    }
+
+    public static Set<String> removeOccupied(Set<String> validLocations, String placement) {
+        Set<String> occupied = getOccupiedLocations(placement);
+        for (String s : occupied) {
+            validLocations.remove(s);
+        }
+
+        return validLocations;
+    }
+
+    /**
+     * Assigns shapes a value based on: 1. rotational symmetry, 2. how big they are 3. how many dead cells they cause
+     */
+    private static int giveValue(Character shapetype) {
+        switch (shapetype) {
+            case 'a':
+                return 9;
+            case 'b':
+                return 4;
+            case 'c':
+                return 3;
+            case 'd':
+                return 8;
+            case 'e':
+                return 5;
+            case 'f':
+                return 2;
+            case 'g':
+                return 1;
+            case 'h':
+                return 7;
+            case 'i':
+                return 10;
+            default:
+                return 6;
+        }
+    }
+
+    /**
+     * Assigns a number a shape type
+     */
+
+    private static Character giveShape(int value) {
+        switch (value) {
+            case 1:
+                return 'g';
+            case 2:
+                return 'f';
+            case 3:
+                return 'c';
+            case 4:
+                return 'b';
+            case 5:
+                return 'e';
+            case 6:
+                return 'j';
+            case 7:
+                return 'h';
+            case 8:
+                return 'd';
+            case 9:
+                return 'a';
+            default:
+                return 'i';
+        }
+    }
+
+    /**
+     * Prioritises shapes based on:
+     * 1. rotational symmetry
+     * 2. their size
+     * 3. how many dead cells they cause (generally)
+     */
+    private static ArrayList<Character> prioritise(Set<Character> pieces){
+        ArrayList<Integer> sortNum = new ArrayList<>();
+        for(Character shape : pieces){
+            sortNum.add(giveValue(shape));
+        }
+
+        ArrayList<Character> prioritisedShapes = new ArrayList<>();
+        Collections.sort(sortNum);
+        for(Integer i : sortNum){
+            prioritisedShapes.add(giveShape(i));
+        }
+        return prioritisedShapes;
+    }
+
+    public static Set<String> nextPiece(String placement, char shapetype, Set<String> validLocations, String challenge) {
+        Set<String> usableLocations = removeOccupied(validLocations,placement);
+        Set<String> output = new HashSet<>();
+
+        int rotations;
+        if(shapetype == 'g' || shapetype == 'f'){
+            rotations = 2;
+        }
+        else{
+            rotations = 4;
+        }
+
+        for(int orientation = 0; orientation < rotations; orientation++){
+            for(String loc : usableLocations){
+                String shape = shapetype + loc + orientation;
+                if(!deadCells.contains(shape)){
+                    if(isPlacementOnBoard(shape)){
+                        if(placementConsistentWithChallenge(shape,challenge)){
+                            if(isPlacementStringValid(placement+shape)){
+                                output.add(shape);
+                            }
+                        }
+                    }
+                }
+                boardStates = new State[5][9]; //remove all the states off the board to prepare for the next iteration
+            }
+        }
+        return output;
+    }
+
+    public static Set<String> getAllPieces(Set<String> placements, char shapetype, Set<String> validLocations, String challenge){
+        Set<String> allPieces = new HashSet<>();
+        for(String piece : placements){
+            Set<String> unusedLocations = new HashSet<>(validLocations);
+            Set<String> usableLocations = removeOccupied(unusedLocations,piece);
+            allPieces.addAll(nextPiece(piece,shapetype,usableLocations,challenge));
+        }
+        return allPieces;
+    }
+
+    public static Set<String> generateStartingPieces(String challenge){
+        Set<String> startingPieces = new HashSet<>();
+        for(int orientation = 0; orientation < 2; orientation++){
+            for(String loc: locations){
+                String shape = 'g' + loc + orientation;
+                if(isPlacementOnBoard(shape)){
+                    if(placementConsistentWithChallenge(shape,challenge)){
+                        startingPieces.add(shape);
+                    }
+                }
+                boardStates = new State[5][9];
+            }
+        }
+        return startingPieces;
+    }
+    public static Set<String> solutions(ArrayList<Character> unusedShapes, Set<String> validLocations, String challenge){
+        Set<String> output = new HashSet<>(Arrays.asList(""));
+        for(char s : unusedShapes){
+            output = getAllPieces(output, s,validLocations, challenge);
+        }
+        return output;
+    }
+
+    public static void main(String[] args) {
+        Set<String> startingPlacements = generateStartingPieces("RRRBWBBRB");
+        ArrayList<Character> unplaced = new ArrayList<>(getUnplacedPieces("g000"));
+
+        Set<String> idk = solutions(unplaced,locations,"RRRBWBBRB");
+
+        for(String s : idk){
+            System.out.println(s);
+        }
+
+
+
+
+
+        }
+
 }

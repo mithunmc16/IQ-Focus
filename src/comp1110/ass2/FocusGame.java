@@ -97,7 +97,8 @@ public class FocusGame {
      * @return True if the placement sequence is valid
      */
 
-    //Written by Joanne Louie
+    //Written by Joanne Louie, u6949022
+
     public static boolean isPlacementStringValid(String placement) {
 
         //Check if a placement string is well formed, if not, return "false"
@@ -157,7 +158,9 @@ public class FocusGame {
      * @return A set of viable piece placements, or null if there are none.
      */
 
-    //Written by Joanne Louie
+    /**
+     *  Written by Joanne Louie, u6949022
+     */
     public static Set<String> getViablePiecePlacements(String placement, String challenge, int col, int row) {
         //Create a set of all the pieces which haven't been placed
         Set<Character> unplacedPieces = getUnplacedPieces(placement);
@@ -218,6 +221,7 @@ public class FocusGame {
     /**
      * placementConsistentWithChallenge returns true if the placement is consistent with the challenge
      * or returns false if the placement is inconsistent with the challenge
+     * Written by Joanne Louie, u6949022
      */
 
     public static boolean placementConsistentWithChallenge(String placement, String challenge){
@@ -293,6 +297,14 @@ public class FocusGame {
         boardStates = new State[5][9];
         return true;
     }
+    /**
+     * Everything below is written by Joanne Louie u6949022
+     * The methods were intended to help with making the solutions, however getSolutions was unable to be completed.
+     * The idea behind it is:
+     * Prioritise shapes by their rotational symmetry, size and the amount of dead cells they create
+     *    - by doing so, as more time goes on, there are less possible positions on the board and therefore less
+     *    placements which can be made
+     */
 
     /**
      * A set of pieces which cause dead cells on the board
@@ -410,6 +422,9 @@ public class FocusGame {
         return sol;
     }
 
+    /**
+     *Given a placement, the function removes all the places it covers from a validLocations set
+     */
     public static Set<String> removeOccupied(Set<String> validLocations, String placement) {
         Set<String> occupied = getOccupiedLocations(placement);
         for (String s : occupied) {
@@ -496,46 +511,10 @@ public class FocusGame {
         return prioritisedShapes;
     }
 
-    public static Set<String> nextPiece(String placement, char shapetype, Set<String> validLocations, String challenge) {
-        Set<String> usableLocations = removeOccupied(validLocations,placement);
-        Set<String> output = new HashSet<>();
 
-        int rotations;
-        if(shapetype == 'g' || shapetype == 'f'){
-            rotations = 2;
-        }
-        else{
-            rotations = 4;
-        }
-
-        for(int orientation = 0; orientation < rotations; orientation++){
-            for(String loc : usableLocations){
-                String shape = shapetype + loc + orientation;
-                if(!deadCells.contains(shape)){
-                    if(isPlacementOnBoard(shape)){
-                        if(placementConsistentWithChallenge(shape,challenge)){
-                            if(isPlacementStringValid(placement+shape)){
-                                output.add(shape);
-                            }
-                        }
-                    }
-                }
-                boardStates = new State[5][9]; //remove all the states off the board to prepare for the next iteration
-            }
-        }
-        return output;
-    }
-
-    public static Set<String> getAllPieces(Set<String> placements, char shapetype, Set<String> validLocations, String challenge){
-        Set<String> allPieces = new HashSet<>();
-        for(String piece : placements){
-            Set<String> unusedLocations = new HashSet<>(validLocations);
-            Set<String> usableLocations = removeOccupied(unusedLocations,piece);
-            allPieces.addAll(nextPiece(piece,shapetype,usableLocations,challenge));
-        }
-        return allPieces;
-    }
-
+    /**
+     * Generates the first pieces of the game
+     */
     public static Set<String> generateStartingPieces(String challenge){
         Set<String> startingPieces = new HashSet<>();
         for(int orientation = 0; orientation < 2; orientation++){
@@ -551,28 +530,50 @@ public class FocusGame {
         }
         return startingPieces;
     }
-    public static Set<String> solutions(ArrayList<Character> unusedShapes, Set<String> validLocations, String challenge){
-        Set<String> output = new HashSet<>(Arrays.asList(""));
-        for(char s : unusedShapes){
-            output = getAllPieces(output, s,validLocations, challenge);
+
+    /**
+     *Generates the next set of pieces whilst considering the remaining locations, placement, and challenge
+     * This function only generates the set of pieces for a specific shape type given by input "piece"
+     */
+    public static Set<String> getNextPieces(Set<String> remainingLocations, String placement, char piece, String challenge){
+        int rotation;
+        if(piece == 'g' || piece == 'f'){
+            rotation = 2;
         }
-        return output;
+        else{
+            rotation = 4;
+        }
+
+        Set<String> viablePieces = new HashSet<>();
+        for(int orientation = 0; orientation < rotation; orientation++){
+            for(String location : remainingLocations){
+                String shape = piece + location + orientation;
+                if(!deadCells.contains(shape)){
+                    if(isPlacementOnBoard(shape)){
+                        if(placementConsistentWithChallenge(shape,challenge)){
+                            if(isPlacementStringValid(placement + shape)){
+                                viablePieces.add(shape);
+                            }
+                        }
+                    }
+                }
+                boardStates = new State[5][9];
+            }
+        }
+        return viablePieces;
     }
 
-    public static void main(String[] args) {
-        Set<String> startingPlacements = generateStartingPieces("RRRBWBBRB");
-        ArrayList<Character> unplaced = new ArrayList<>(getUnplacedPieces("g000"));
-
-        Set<String> idk = solutions(unplaced,locations,"RRRBWBBRB");
-
-        for(String s : idk){
-            System.out.println(s);
+    /**
+     *Generates all the possible pieces which can be placed given the remaining locations, current string
+     * placement, and the challenge
+     */
+    public static Set<String> allPieces(Set<String> remainingLocations, String placement, String challenge){
+        Set<String> allP = new HashSet<>();
+        Set<Character> unusedPieces = getUnplacedPieces(placement);
+        for(char piece : unusedPieces){
+            allP.addAll(getNextPieces(remainingLocations,placement,piece,challenge));
         }
-
-
-
-
-
-        }
+        return allP;
+    }
 
 }

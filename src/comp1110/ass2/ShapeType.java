@@ -8,6 +8,8 @@ public enum ShapeType {
 
 
     /**
+     * The 2d array and function in this class was created by Joanne Louie, u6949022
+     *
      * The following functions are heavily inspired by Assignment 1 "TileType".
      *
      * The following indices are the four rotations of a shape from 0 to 3.

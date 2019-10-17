@@ -9,6 +9,7 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
@@ -175,7 +176,7 @@ public class Board extends Application {
     //
     private final Group controls = new Group();
     private TextField textField;
-
+    private final Slider difficulty = new Slider();
 //
 
 
@@ -224,6 +225,7 @@ public class Board extends Application {
             ds.setFitHeight(SQUARE_HEIGHT);
             root.getChildren().add(ds);
         }
+        makeControls();
         scene.setRoot(root);
         scene.setFill(BEIGE);
         primaryStage.setScene(scene);
@@ -338,12 +340,15 @@ public class Board extends Application {
     class DraggableShapes extends Shapes {
         double homeX, homeY;
         double mouseX, mouseY;
+        Image[] images = new Image[4];
         long lastRotationTime = System.currentTimeMillis();
+        String placement;
 
         DraggableShapes(char piece, double x, double y, int orientation) {
             super(piece, x, y, orientation);
             homeX = this.getLayoutX();
             homeY = this.getLayoutY();
+
             this.setOnMousePressed(event -> {
                 mouseX = event.getSceneX();
                 mouseY = event.getSceneY();
@@ -367,12 +372,13 @@ public class Board extends Application {
                 if (System.currentTimeMillis() - lastRotationTime > ROTATION_THRESHOLD){
                     lastRotationTime = System.currentTimeMillis();
 
+                    for (int i = 0; i < 4; i ++) {
+                        images[i] = new Image(getClass().getResource(URI_BASE + piece + i + ".png").toString());
+                    }
+                    this.orientation = (this.orientation + 1) % 4;
 
-                    int orientationR = (this.orientation + 1) % 4;
+                    this.setImage(images[orientation]);
 
-
-                    Image s1 = new Image(getClass().getResource(URI_BASE + piece + orientationR + ".png").toString());
-                    this.setImage(s1);
                     this.setLayoutX(this.getLayoutX());
                     this.setLayoutY(this.getLayoutY());
 
@@ -393,7 +399,7 @@ public class Board extends Application {
                     } else {
                         HEIGHT = 3;
                     }
-                    switch (orientationR % 2) {
+                    switch (orientation % 2) {
                         case 0:
                             this.setFitWidth(WIDTH * SQUARE_WIDTH);
                             this.setFitHeight(HEIGHT * SQUARE_HEIGHT);
@@ -404,7 +410,6 @@ public class Board extends Application {
                     }
                     event.consume();
             }});
-
             this.setOnMouseReleased(event -> {
                 int WIDTH = 0;
                 int HEIGHT = 0;
@@ -435,7 +440,8 @@ public class Board extends Application {
                 String xCoord = Integer.toString((int) (((nearestX(this.getLayoutX())) - 148) / SQUARE_WIDTH));
                 String yCoord = Integer.toString((int) (((nearestY(this.getLayoutY())) - 87) / SQUARE_HEIGHT));
 
-                String placement = piece + xCoord + yCoord + this.orientation;
+                this.placement = piece + xCoord + yCoord + this.orientation;
+                System.out.println(placement);
                 if (isPlacementStringValid(placement)) {
                     if (this.getLayoutX() > 868 || this.getLayoutX() < 106) {
                         this.setLayoutX(homeX);
@@ -460,6 +466,11 @@ public class Board extends Application {
 
             });
 
+            String xCoord = Integer.toString((int) (((nearestX(this.getLayoutX())) - 148) / SQUARE_WIDTH));
+            String yCoord = Integer.toString((int) (((nearestY(this.getLayoutY())) - 87) / SQUARE_HEIGHT));
+            String placement = piece + xCoord + yCoord + this.orientation;
+            String boardPlacement = placement + piece + xCoord + yCoord + this.orientation;
+
         }
 
         ;
@@ -480,7 +491,6 @@ public class Board extends Application {
     ImageView[] makeChallenge(String Challenge) { // This block displays the challenge to be implemented for the game.
 
         String input = null;
-        System.out.println(Challenge);
         ImageView[] challengeArray = new ImageView[9];
         char[] clg = Challenge.toCharArray();
 
@@ -548,6 +558,27 @@ public class Board extends Application {
         return challengeArray;
     }
     // end of task 8
+    private void makeControls() {
+        difficulty.setMin(1);
+        difficulty.setMax(4);
+        difficulty.setValue(0);
+        difficulty.setShowTickLabels(true);
+        difficulty.setShowTickMarks(true);
+        difficulty.setMajorTickUnit(1);
+        difficulty.setMinorTickCount(1);
+        difficulty.setSnapToTicks(true);
+
+        difficulty.setLayoutX(BOARD_WIDTH + X_SHIFT);
+        difficulty.setLayoutY(BOARD_HEIGHT + 87);
+        difficulty.toFront();
+        controls.getChildren().add(difficulty);
+
+        final Label difficultyCaption = new Label("Difficulty:");
+        difficultyCaption.setTextFill(Color.GREY);
+        difficultyCaption.setLayoutX(BOARD_WIDTH + 42 + X_SHIFT + 70);
+        difficultyCaption.setLayoutY(BOARD_HEIGHT / 2);
+        controls.getChildren().add(difficultyCaption);
+    }
 
 
     // FIXME Task 10: Implement hints

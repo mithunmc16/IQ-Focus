@@ -16,17 +16,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-import javafx.scene.Scene;
-
-
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Arrays;
-
 import javafx.util.Duration;
-
-import static comp1110.ass2.FocusGame.isPlacementStringValid;
-import static javafx.scene.paint.Color.*;
 
 import java.net.URI;
 import java.util.List;
@@ -161,141 +151,43 @@ public class Board extends Application {
 
     // FIXME Task 7: Implement a basic playable Focus Game in JavaFX that only allows pieces to be placed in valid places
 
+    private static final int BOARD_WIDTH = 933;
+    private static final int BOARD_HEIGHT = 700;
+    private static final int SQUARE_SIZE = 60;
+    private static final int MARGIN_X = 18;
+    private static final int MARGIN_Y = 18;
+    private static final int ROWS = 4;
+    private static final int COLUMNS = 8;
 
-    private static final int BOARD_WIDTH = 720;
-    private static final int BOARD_HEIGHT = 463;
-    private static final double SQUARE_WIDTH = 70;
-    private static final double SQUARE_HEIGHT = 70;
-    private static final double X_SHIFT = 106;
-
+    private static Group root = new Group();
     private final Group shapes = new Group();
     private final Group board = new Group();
 //
-    private final Group controls = new Group();
-    private TextField textField;
+private final Group controls = new Group();
+private TextField textField;
 
 //
 
 
 
     private static final String URI_BASE = "assets/";
+    private static final String BASEBOARD_URI = Board.class.getResource(URI_BASE + "board.png").toString();
 
-    @Override
-    public void start(Stage primaryStage) throws Exception {
-        primaryStage.setTitle("Game");
-        Group root = new Group();
-        Scene scene = new Scene(root, 933, 700);
+    /*The underlying game*/
+    FocusGame game;
 
+    /*the state of the shapes*/
+    char[] shapeState = new char[10]; //10 shapes all off the screen initially
 
-        ArrayList<Character> unplacedPieces = new ArrayList<>(Arrays.asList('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j'));
-        Image[] images = new Image[10];
-        for (int i = 0; i < 10; i++) {
-            images[i] = new Image(getClass().getResource(URI_BASE + unplacedPieces.get(i) + ".png").toString());
-        }
+    /*Initialise dropShadow*/
+    private static DropShadow dropShadow;
 
-        // Creates the board
-        ImageView board = new ImageView();
-        Image b = new Image(getClass().getResource(URI_BASE + "board.png").toString());
-        board.setLayoutX(0 + X_SHIFT);
-        board.setLayoutY(0);
-        board.setFitWidth(BOARD_WIDTH);
-        board.setFitHeight(BOARD_HEIGHT);
-        board.setImage(b);
-
-        root.getChildren().add(board);
-
-        for (ImageView i : makeChallenge(Challenge)) {
-            root.getChildren().add(i);
-
-        };
-
-
-        for (int i = 0; i < 10; i ++) {
-            ImageView piece = new ImageView();
-            piece.setLayoutX(42 + X_SHIFT + 2*i*SQUARE_WIDTH);
-            if (i > 4) {
-                piece.setLayoutY(BOARD_HEIGHT + 2 * SQUARE_HEIGHT);
-                piece.setLayoutX(42 + X_SHIFT + 2*(i-5)*SQUARE_WIDTH);
-            }
-            else {
-                piece.setLayoutY(BOARD_HEIGHT + 0.5 * SQUARE_HEIGHT);
-            }
-            piece.setFitWidth(SQUARE_WIDTH);
-            piece.setFitHeight(SQUARE_HEIGHT);
-            piece.setImage(images[i]);
-            root.getChildren().add(piece);
-        }
-        scene.setRoot(root);
-        scene.setFill(BEIGE);
-        primaryStage.setScene(scene);
-        primaryStage.show();
+    {
+        dropShadow = new DropShadow();
+        dropShadow.setOffsetX(2.0);
+        dropShadow.setOffsetY(2.0);
+        dropShadow.setColor(Color.color(0, 0, 0, 0.4));
     }
-    // Generates images representing each shape using placement string
-    public class Shapes extends ImageView {
-        ImageView shape;
-        char piece;
-        double x,y;
-        int orientation;
-
-
-        public Shapes(String placement) {
-            if (isPlacementStringValid(placement)) {
-                this.piece = placement.charAt(0);
-                this.x = (double) Character.digit(placement.charAt(1), 10);
-                this.y = (double) Character.digit(placement.charAt(2), 10);
-                this.orientation = Character.getNumericValue(placement.charAt(3));
-
-                {
-                    Image s1 = new Image(getClass().getResource(URI_BASE + piece + orientation + ".png").toString());
-
-                    this.setLayoutX(42 + X_SHIFT + x * SQUARE_WIDTH);
-                    this.setLayoutY(87 + y * SQUARE_HEIGHT);
-
-                    int WIDTH = 0;
-                    int HEIGHT = 0;
-                    if (piece == 'a' || piece == 'd' || piece == 'e' || piece == 'f' || piece == 'g' || piece == 'h') {
-                        WIDTH = 3;
-                    } else if (piece == 'b' || piece == 'c' || piece == 'j') {
-                        WIDTH = 4;
-                    } else {
-                        WIDTH = 2;
-                    }
-                    if (piece == 'a' || piece == 'b' || piece == 'c' || piece == 'd' || piece == 'e' || piece == 'g'
-                            || piece == 'i' || piece == 'j') {
-                        HEIGHT = 2;
-                    } else if (piece == 'f') {
-                        HEIGHT = 1;
-                    } else {
-                        HEIGHT = 3;
-                    }
-                    switch (orientation % 2) {
-                        case 0:
-                            this.setFitWidth(WIDTH * SQUARE_WIDTH);
-                            this.setFitHeight(HEIGHT * SQUARE_HEIGHT);
-                            break;
-                        case 1:
-                            this.setFitWidth(HEIGHT * SQUARE_WIDTH);
-                            this.setFitHeight(WIDTH * SQUARE_HEIGHT);
-                    }
-                    this.setImage(s1);
-                }
-            }
-        }
-
-        public ImageView getShape() {
-            return shape;
-        }
-    }
-    class DraggableShapes extends Shapes {
-        int homeX, homeY;
-        double mouseX, mouseY;
-
-        DraggableShapes(String placement) {
-            super(placement);
-        }
-
-    }
-
 //
     Random rand = new Random();
     int i = rand.nextInt(challenge.length);
@@ -305,11 +197,10 @@ public class Board extends Application {
     // FIXME Task 8: Implement challenges (you may use challenges and assets provided for you in comp1110.ass2.gui.assets: sq-b.png, sq-g.png, sq-r.png & sq-w.png)
 
     //Written by Mithun Comar
-     ImageView[] makeChallenge(String Challenge){ // This block displays the challenge to be implemented for the game.
+    void makeChallenge(String Challenge){// This block displays the challenge to be implemented for the game.
 
     String input = null;
     System.out.println(Challenge);
-    ImageView[] challengeArray = new ImageView[9];
     char[] clg = Challenge.toCharArray();
 
     for (int j = 0; j<clg.length; j++){
@@ -324,68 +215,147 @@ public class Board extends Application {
             case 'W': input = "sq-w";
 
         }
-        Image image = new Image(getClass().getResource(URI_BASE + input + ".png").toString()); //selecting image from the directory
+        Image image = new Image(getClass().getResource(URI_BASE + input + ".png").toString());//selecting image from the directory
+        System.out.println(input);
         ImageView img = new ImageView(image);
 
-        img.setOpacity(0.5); //setting the image to be opaque
+        img.setOpacity(0.7);//setting the image to be opaque
 
-        img.setFitHeight(SQUARE_HEIGHT);
-        img.setFitWidth(SQUARE_WIDTH);
+        int widthScale = (SQUARE_SIZE);
+        int heightScale = (SQUARE_SIZE);
+        img.setFitHeight(heightScale);
+        img.setFitWidth(widthScale);
 
+        img.setImage(image);
         // placing images in the order [0][1][2]
         //                             [3][4][5]
         //                             [6][7][8]
-        // based on the challenge string eg. RRBWBRWGG
-
+        //based on the challenge string eg. RRBWBRWGG
         if (j == 0) {
 
-            img.setTranslateX(42 + X_SHIFT + SQUARE_WIDTH * 3);
-            img.setTranslateY(87 + SQUARE_HEIGHT * 1);
+            img.setTranslateX(SQUARE_SIZE * 1);
+            img.setTranslateY(SQUARE_SIZE * 3);
         }
         else if (j == 1){
-            img.setTranslateX(42 + X_SHIFT + SQUARE_WIDTH * 4);
-            img.setTranslateY(87 + SQUARE_HEIGHT * 1);
+            img.setTranslateX(SQUARE_SIZE * 2);
+            img.setTranslateY(SQUARE_SIZE * 3);
         }
         else if(j == 2){
-            img.setTranslateX(42 + X_SHIFT + SQUARE_WIDTH * 5);
-            img.setTranslateY(87 + SQUARE_HEIGHT * 1);
+            img.setTranslateX(SQUARE_SIZE * 3);
+            img.setTranslateY(SQUARE_SIZE * 3);
         }
         else if (j == 3){
-            img.setTranslateX(42 + X_SHIFT + SQUARE_WIDTH * 3);
-            img.setTranslateY(87 + SQUARE_HEIGHT * 2);
+            img.setTranslateX(SQUARE_SIZE * 1);
+            img.setTranslateY(SQUARE_SIZE * 4);
         }
         else if(j == 4){
-            img.setTranslateX(42 + X_SHIFT + SQUARE_WIDTH * 4);
-            img.setTranslateY(87 + SQUARE_HEIGHT * 2);
+            img.setTranslateX(SQUARE_SIZE * 2);
+            img.setTranslateY(SQUARE_SIZE * 4);
         }
         else if(j == 5){
-            img.setTranslateX(42 + X_SHIFT + SQUARE_WIDTH * 5);
-            img.setTranslateY(87 + SQUARE_HEIGHT * 2);
+            img.setTranslateX(SQUARE_SIZE * 3);
+            img.setTranslateY(SQUARE_SIZE * 4);
         }
         else if (j == 6){
-            img.setTranslateX(42 + X_SHIFT + SQUARE_WIDTH * 3);
-            img.setTranslateY(87 + SQUARE_HEIGHT * 3);
+            img.setTranslateX(SQUARE_SIZE * 1);
+            img.setTranslateY(SQUARE_SIZE * 5);
         }
         else if(j == 7){
-            img.setTranslateX(42 + X_SHIFT + SQUARE_WIDTH * 4);
-            img.setTranslateY(87 + SQUARE_HEIGHT * 3);
+            img.setTranslateX(SQUARE_SIZE * 2);
+            img.setTranslateY(SQUARE_SIZE * 5);
         }
         else{
-            img.setTranslateX(42 + X_SHIFT + SQUARE_WIDTH * 5);
-            img.setTranslateY(87 + SQUARE_HEIGHT * 3);
+            img.setTranslateX(SQUARE_SIZE * 3);
+            img.setTranslateY(SQUARE_SIZE * 5);
         }
-        img.setImage(image);
-        challengeArray[j] = img;
+
+        root.getChildren().add(img);
     }
-    return challengeArray;
+
 }
-    // end of task 8
+// end of task 8
+
+
+    /*representation of the shapes */
+    class GShape extends ImageView {
+        char piece;
+
+        /**
+         * Construct a playing piece
+         *
+         * @param piece The piece to be created, represented by a letter
+         */
+
+        GShape(char piece) {
+            if (piece > 'j' || piece < 'a') {
+                throw new IllegalArgumentException("Bad piece: \"" + piece + "\"");
+            }
+            this.piece = piece;
+            setFitWidth(SQUARE_SIZE);
+            setFitHeight(SQUARE_SIZE);
+            setImage(new Image(Board.class.getResource(URI_BASE + piece + ".png").toString()));
+
+            //Set the height and width depending on which shape it is
+            switch (piece) {
+                case 'a':
+                    setFitWidth(SQUARE_SIZE * 3);
+                    setFitHeight(SQUARE_SIZE * 2);
+
+                case 'b':
+                    setFitWidth(SQUARE_SIZE * 4);
+                    setFitHeight(SQUARE_SIZE * 2);
+
+                case 'c':
+                    setFitWidth(SQUARE_SIZE * 4);
+                    setFitHeight(SQUARE_SIZE * 2);
+
+                case 'd':
+                    setFitWidth(SQUARE_SIZE * 3);
+                    setFitHeight(SQUARE_SIZE * 2);
+
+                case 'e':
+                    setFitWidth(SQUARE_SIZE * 3);
+                    setFitHeight(SQUARE_SIZE * 2);
+
+                case 'f':
+                    setFitWidth(SQUARE_SIZE * 3);
+                    setFitHeight(SQUARE_SIZE);
+
+                case 'g':
+                    setFitWidth(SQUARE_SIZE * 3);
+                    setFitHeight(SQUARE_SIZE * 2);
+
+                case 'h':
+                    setFitWidth(SQUARE_SIZE * 3);
+                    setFitHeight(SQUARE_SIZE * 3);
+
+                case 'i':
+                    setFitWidth(SQUARE_SIZE * 2);
+                    setFitHeight(SQUARE_SIZE * 2);
+
+                case 'j':
+                    setFitWidth(SQUARE_SIZE * 4);
+                    setFitHeight(SQUARE_SIZE * 2);
+
+            }
 
 
 
+            setEffect(dropShadow);
+        }
 
+        // Create draggable pieces
+        class DraggabblePiece extends GShape {
+            int homeX, homeY;
+            double mouseX, mouseY;
+            int orientation;
 
+            DraggabblePiece(char tile) {
+                super(tile);
+            }
 
+        }
+    }
 
 
 
@@ -397,6 +367,13 @@ public class Board extends Application {
 
 
 
+    @Override
+    public void start(Stage primaryStage) {
+        primaryStage.setTitle("FocusGame Viewer");
+        Scene scene = new Scene(root, BOARD_WIDTH, BOARD_HEIGHT);
 
-
+        makeChallenge(Challenge);
+        primaryStage.setScene(scene);
+        primaryStage.show();
     }
+}

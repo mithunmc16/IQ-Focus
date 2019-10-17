@@ -43,9 +43,9 @@ class:
 # I wish to submit the following methods as entirely my own (remove this if
 # you want to just submit classes):
 method:
-   -  void makePlacement(String placement)
+   - makePlacement(String placement)
    - ImageView[] makeChallenge(String Challenge)
-   - public static Set<Character> getUnplacedPieces(String placement)
+   - getUnplacedPieces(String placement)
 
 # sign *your* name and uid here
 name: Mithun Comar

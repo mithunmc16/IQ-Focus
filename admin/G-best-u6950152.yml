@@ -37,15 +37,16 @@ declaration: >-
 # I wish to submit the following classes as entirely my own (remove this if
 # you want to just submit methods):
 class:
-   - public class Board extends Application
-   -  public class Shapes extends ImageView
-   - class DraggableShapes extends Shapes
+   - Board extends Application
+   - Shapes extends ImageView
+   - DraggableShapes extends Shapes
 
 # I wish to submit the following methods as entirely my own (remove this if
 # you want to just submit classes):
 method:
-   - static boolean isPiecePlacementWellFormed(String piecePlacement)
-   - public static boolean isPlacementStringWellFormed(String placement)
+   - isPiecePlacementWellFormed(String piecePlacement)
+   - isPlacementStringWellFormed(String placement)
+
 
 # sign *your* name and uid here
 name: Benjamin Samuel

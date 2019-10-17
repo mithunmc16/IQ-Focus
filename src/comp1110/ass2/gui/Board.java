@@ -1,6 +1,7 @@
 package comp1110.ass2.gui;
 
 import comp1110.ass2.FocusGame;
+import comp1110.ass2.Orientation;
 import javafx.animation.FadeTransition;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -22,8 +23,7 @@ import javafx.scene.Scene;
 
 
 import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.*;
 
 import javafx.util.Duration;
 
@@ -31,8 +31,6 @@ import static comp1110.ass2.FocusGame.*;
 import static javafx.scene.paint.Color.*;
 
 import java.net.URI;
-import java.util.List;
-import java.util.Random;
 
 public class Board extends Application {
 
@@ -181,6 +179,7 @@ public class Board extends Application {
 
 
     private static final String URI_BASE = "assets/";
+    private static final String[] placements = new String[10];
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -198,6 +197,7 @@ public class Board extends Application {
         // Generates the draggable pieces
         generatePieces();
         makeControls();
+
         root.getChildren().add(controls);
 
         scene.setRoot(root);
@@ -206,8 +206,6 @@ public class Board extends Application {
         primaryStage.show();
     }
 
-
-    double[] yCoordinates = new double[5];
 
     public double nearestX(double x) {
         double[] distances = new double[9];
@@ -323,6 +321,10 @@ public class Board extends Application {
             homeX = this.getLayoutX();
             homeY = this.getLayoutY();
 
+            for (int i = 0; i < 4; i++) {
+                images[i] = new Image(getClass().getResource(URI_BASE + piece + i + ".png").toString());
+            }
+
             this.setOnMousePressed(event -> {
                 mouseX = event.getSceneX();
                 mouseY = event.getSceneY();
@@ -340,21 +342,17 @@ public class Board extends Application {
                 mouseY = event.getSceneY();
 
             });
-
-
             this.setOnScroll(event -> {
                 if (System.currentTimeMillis() - lastRotationTime > ROTATION_THRESHOLD) {
                     lastRotationTime = System.currentTimeMillis();
 
-                    for (int i = 0; i < 4; i++) {
-                        images[i] = new Image(getClass().getResource(URI_BASE + piece + i + ".png").toString());
-                    }
                     this.orientation = (this.orientation + 1) % 4;
+                    double setX = this.getLayoutX();
+                    double setY = this.getLayoutY();
+                    this.setImage(images[this.orientation]);
 
-                    this.setImage(images[orientation]);
-
-                    this.setLayoutX(this.getLayoutX());
-                    this.setLayoutY(this.getLayoutY());
+                    this.setLayoutX(setX);
+                    this.setLayoutY(setY);
 
                     int WIDTH = 0;
                     int HEIGHT = 0;
@@ -373,7 +371,7 @@ public class Board extends Application {
                     } else {
                         HEIGHT = 3;
                     }
-                    switch (orientation % 2) {
+                    switch (this.orientation % 2) {
                         case 0:
                             this.setFitWidth(WIDTH * SQUARE_WIDTH);
                             this.setFitHeight(HEIGHT * SQUARE_HEIGHT);
@@ -403,7 +401,7 @@ public class Board extends Application {
                 } else {
                     HEIGHT = 3;
                 }
-                switch (orientation % 2) {
+                switch (this.orientation % 2) {
                     case 0:
                         this.setFitWidth(WIDTH * SQUARE_WIDTH);
                         this.setFitHeight(HEIGHT * SQUARE_HEIGHT);
@@ -411,48 +409,55 @@ public class Board extends Application {
                     case 1:
                         this.setFitWidth(HEIGHT * SQUARE_WIDTH);
                         this.setFitHeight(WIDTH * SQUARE_HEIGHT);
+                        break;
                 }
-                String xCoord = Integer.toString((int) (((nearestX(this.getLayoutX())) - 148) / SQUARE_WIDTH));
+                String xCoord = Integer.toString((int) (((nearestX(this.getLayoutX())) - (X_SHIFT + 42)) / SQUARE_WIDTH));
                 String yCoord = Integer.toString((int) (((nearestY(this.getLayoutY())) - 87) / SQUARE_HEIGHT));
 
                 this.placement = piece + xCoord + yCoord + this.orientation;
-                System.out.println(placement);
-                if (isPlacementStringValid(placement)) {
+                System.out.println(this.placement);
+
+                addPlacement(this.placement);
+
+                List<String> list = new ArrayList<String>();
+                for(String s : placements) {
+                    if(s != null && s.length() > 0) {
+                        list.add(s);
+                    }}
+                System.out.println(String.join("",list));
+                if (isPlacementStringValid(String.join("",list))) {
                     if (this.getLayoutX() > 868 || this.getLayoutX() < 106) {
                         this.setLayoutX(homeX);
                         this.setLayoutY(homeY);
                         this.setFitWidth(SQUARE_WIDTH);
                         this.setFitHeight(SQUARE_HEIGHT);
+                        removePlacement(this.placement);
                     }
                     if (this.getLayoutY() > BOARD_HEIGHT) {
                         this.setLayoutX(homeX);
                         this.setLayoutY(homeY);
                         this.setFitWidth(SQUARE_WIDTH);
                         this.setFitHeight(SQUARE_HEIGHT);
+                        removePlacement(this.placement);
                     }
                     this.setLayoutX(nearestX(this.getLayoutX()));
                     this.setLayoutY(nearestY(this.getLayoutY()));
+
                 } else {
                     this.setLayoutX(homeX);
                     this.setLayoutY(homeY);
                     this.setFitWidth(SQUARE_WIDTH);
                     this.setFitHeight(SQUARE_HEIGHT);
+                    removePlacement(this.placement);
                 }
+                this.toFront();
 
+                String placementString = String.join("",placements);
             });
-
-            String xCoord = Integer.toString((int) (((nearestX(this.getLayoutX())) - 148) / SQUARE_WIDTH));
-            String yCoord = Integer.toString((int) (((nearestY(this.getLayoutY())) - 87) / SQUARE_HEIGHT));
-            String placement = piece + xCoord + yCoord + this.orientation;
-            String boardPlacement = placement + piece + xCoord + yCoord + this.orientation;
-
         }
 
         ;
-
-
     }
-
 
     //
     Random rand = new Random();
@@ -462,7 +467,6 @@ public class Board extends Application {
 
     // FIXME Task 8: Implement challenges (you may use challenges and assets provided for you in comp1110.ass2.gui.assets: sq-b.png, sq-g.png, sq-r.png & sq-w.png)
 
-    //Written by Mithun Comar
     ImageView[] makeChallenge(String Challenge) { // This block displays the challenge to be implemented for the game.
 
         String input = null;
@@ -544,7 +548,10 @@ public class Board extends Application {
             generateBoard();
             generatePieces();
             root.getChildren().add(controls);
-            
+            for (int j = 0; j < 10; j ++) {
+                placements[j] = null;
+            }
+
             for (ImageView image : makeChallenge(Challenge)) {
                 root.getChildren().add(image);
             }
@@ -553,6 +560,74 @@ public class Board extends Application {
             e.printStackTrace();
             Platform.exit();
 
+        }
+    }
+    void addPlacement(String placement) {
+        switch (placement.charAt(0)) {
+            case 'a':
+                placements[0] = placement;
+                break;
+            case 'b':
+                placements[1] = placement;
+                break;
+            case 'c':
+                placements[2] = placement;
+                break;
+            case 'd':
+                placements[3] = placement;
+                break;
+            case 'e':
+                placements[4] = placement;
+                break;
+            case 'f':
+                placements[5] = placement;
+                break;
+            case 'g':
+                placements[6] = placement;
+                break;
+            case 'h':
+                placements[7] = placement;
+                break;
+            case 'i':
+                placements[8] = placement;
+                break;
+            case 'j':
+                placements[9] = placement;
+                break;
+        }
+    }
+    void removePlacement(String placement) {
+        switch (placement.charAt(0)) {
+            case 'a':
+                placements[0] = null;
+                break;
+            case 'b':
+                placements[1] = null;
+                break;
+            case 'c':
+                placements[2] = null;
+                break;
+            case 'd':
+                placements[3] = null;
+                break;
+            case 'e':
+                placements[4] = null;
+                break;
+            case 'f':
+                placements[5] = null;
+                break;
+            case 'g':
+                placements[6] = null;
+                break;
+            case 'h':
+                placements[7] = null;
+                break;
+            case 'i':
+                placements[8] = null;
+                break;
+            case 'j':
+                placements[9] = null;
+                break;
         }
     }
 
@@ -609,6 +684,7 @@ public class Board extends Application {
             root.getChildren().add(ds);
         }
     }
+
 
 
     void generateBoard() {

@@ -403,7 +403,7 @@ public class Board extends Application {
                             this.setFitHeight(WIDTH * SQUARE_HEIGHT);
                     }
                     event.consume();
-            }});
+                }});
 
             this.setOnMouseReleased(event -> {
                 int WIDTH = 0;
@@ -556,4 +556,3 @@ public class Board extends Application {
 
 
 }
-

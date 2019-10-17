@@ -341,7 +341,7 @@ public class FocusGame {
      *
      * A given challenge can only solved with a single placement of pieces.
      *
-     * Since some piece placements can be described two ways (due to symmetry),
+     * Since some piece placements ca   n be described two ways (due to symmetry),
      * you need to use a canonical encoding of the placement, which means you
      * must:
      * - Order the placement sequence by piece IDs

@@ -415,17 +415,16 @@ public class Board extends Application {
                 String yCoord = Integer.toString((int) (((nearestY(this.getLayoutY())) - 87) / SQUARE_HEIGHT));
 
                 this.placement = piece + xCoord + yCoord + this.orientation;
-                System.out.println(this.placement);
 
                 addPlacement(this.placement);
 
                 List<String> list = new ArrayList<String>();
-                for(String s : placements) {
-                    if(s != null && s.length() > 0) {
+                for (String s : placements) {
+                    if (s != null && s.length() > 0) {
                         list.add(s);
-                    }}
-                System.out.println(String.join("",list));
-                if (isPlacementStringValid(String.join("",list))) {
+                    }
+                }
+                if (isPlacementStringValid(String.join("", list))) {
                     if (this.getLayoutX() > 868 || this.getLayoutX() < 106) {
                         this.setLayoutX(homeX);
                         this.setLayoutY(homeY);
@@ -452,7 +451,7 @@ public class Board extends Application {
                 }
                 this.toFront();
 
-                String placementString = String.join("",placements);
+                String placementString = String.join("", placements);
             });
         }
 
@@ -548,7 +547,7 @@ public class Board extends Application {
             generateBoard();
             generatePieces();
             root.getChildren().add(controls);
-            for (int j = 0; j < 10; j ++) {
+            for (int j = 0; j < 10; j++) {
                 placements[j] = null;
             }
 
@@ -562,6 +561,7 @@ public class Board extends Application {
 
         }
     }
+
     void addPlacement(String placement) {
         switch (placement.charAt(0)) {
             case 'a':
@@ -596,6 +596,7 @@ public class Board extends Application {
                 break;
         }
     }
+
     void removePlacement(String placement) {
         switch (placement.charAt(0)) {
             case 'a':
@@ -684,7 +685,6 @@ public class Board extends Application {
             root.getChildren().add(ds);
         }
     }
-
 
 
     void generateBoard() {

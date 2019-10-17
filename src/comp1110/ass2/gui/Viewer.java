@@ -36,19 +36,23 @@ public class Viewer extends Application {
     private final Group controls = new Group();
     private TextField textField;
 
+
     /**
      * Draw a placement in the window, removing any previously drawn one
      *
      * @param placement A valid placement string
      */
     void makePlacement(String placement) {
-        System.out.println((FocusGame.isPlacementStringValid(placement)));// to check if placement is valid
         root.getChildren().clear();
         root.getChildren().add(controls);
-        //output image only of placement string is valid && well formed
-        if (FocusGame.isPlacementStringValid(placement) && FocusGame.isPlacementStringWellFormed(placement)) {
+        // output image only if placement string is valid && well formed
 
-            int X = ((VIEWER_WIDTH - (COLUMNS * SQUARE_SIZE)) / 2);//X and Y coordinates initialised
+
+
+        if (FocusGame.isPlacementStringValid(placement)) {
+
+            // X and Y coordinates initialised
+            int X = ((VIEWER_WIDTH - (COLUMNS * SQUARE_SIZE)) / 2);
             int Y = ((VIEWER_HEIGHT - (ROWS * SQUARE_SIZE)) / 2);
 
             for (int i = 0; i < placement.length(); i += 4) {
@@ -60,17 +64,14 @@ public class Viewer extends Application {
                 int rotation = Character.getNumericValue(placements.charAt(3));
 
                 Image image = new Image(getClass().getResource(URI_BASE + obj + ".png").toString());
+
                 ImageView img = new ImageView();
                 img.setImage(image);
-//rotating images based on character 3
+                // rotating images based on character 3
                 int r = rotation;
-                if (r >= 4) {
-                    r -= 4;
-                }
+
                 img.setRotate(r * 90);
-                if (rotation >= 4) {
-                    img.setScaleY(-1);
-                }
+
                 // hardcoding height and width of the images.
                 int width;
                 int height;
@@ -78,7 +79,7 @@ public class Viewer extends Application {
 
                 if (obj == 'b' || obj == 'c' || obj == 'j') {
                     width = 4;
-                } else if (obj == 'a' || obj == 'd' || obj == 'e' || obj == 'f' || obj == 'g' || obj == 'h') {
+                } else if (obj == 'a' ||  obj == 'd' || obj == 'e' || obj == 'f' || obj == 'g' || obj == 'h') {
                     width = 3;
                 }else {
                     width = 2;
@@ -93,7 +94,7 @@ public class Viewer extends Application {
                     height = 1;
                 }
 
-//scaling image to fit in the stage.
+                //scaling image to fit in the stage.
                 int widthScale = (width * SQUARE_SIZE);
                 int heightScale = (height * SQUARE_SIZE);
 
@@ -102,7 +103,7 @@ public class Viewer extends Application {
 
                 if (rotation % 2 == 0 || height == width) {
 
-                    img.setTranslateX(SQUARE_SIZE * (x - 1) + X);
+                    img.setTranslateX(SQUARE_SIZE * (x-1) + X);
                     img.setTranslateY(SQUARE_SIZE * y + Y);
                 } else {
 
@@ -147,6 +148,7 @@ public class Viewer extends Application {
         root.getChildren().add(controls);
 
         makeControls();
+
 
         primaryStage.setScene(scene);
         primaryStage.show();

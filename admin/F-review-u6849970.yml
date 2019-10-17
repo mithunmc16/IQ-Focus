@@ -19,8 +19,9 @@ component: Task 5
 comments:
   - The code is well structured and concise
   - Sufficient comments are present.
-  - The sequence, selection and iteration used in the methods are appropriate
-  - Proper naming conventions followed.
+  - The code is clear in places where there are no comments
+  - Local variables and methods are appropriately named
+ 
 
 
 

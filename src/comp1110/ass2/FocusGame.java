@@ -4,7 +4,6 @@ import static comp1110.ass2.BoardState.*;
 import static comp1110.ass2.State.*;
 
 
-import java.lang.reflect.Array;
 import java.util.*;
 
 
@@ -86,13 +85,13 @@ public class FocusGame {
 
     /**
      * Determine whether a placement string is valid.
-     * <p>
+     *
      * To be valid, the placement string must be:
      * - well-formed, and
      * - each piece placement must be a valid placement according to the
-     * rules of the game:
-     * - pieces must be entirely on the board
-     * - pieces must not overlap each other
+     *   rules of the game:
+     *   - pieces must be entirely on the board
+     *   - pieces must not overlap each other
      *
      * @param placement A placement string
      * @return True if the placement sequence is valid
@@ -136,7 +135,7 @@ public class FocusGame {
      * Given a string describing a placement of pieces and a string describing
      * a challenge, return a set of all possible next viable piece placements
      * which cover a specific board location.
-     * <p>
+     *
      * For a piece placement to be viable
      * - it must be valid
      * - it must be consistent with the challenge
@@ -153,8 +152,8 @@ public class FocusGame {
      *                  - 'B' = Blue square
      *                  - 'G' = Green square
      *                  - 'W' = White square
-     * @param col       The location's column.
-     * @param row       The location's row.
+     * @param col      The location's column.
+     * @param row      The location's row.
      * @return A set of viable piece placements, or null if there are none.
      */
 
@@ -164,18 +163,18 @@ public class FocusGame {
         Set<Character> unplacedPieces = getUnplacedPieces(placement);
         Set<String> validPieces = new HashSet<>(); //Create the set which will contain all viable piece placements
 
-        for (char piece : unplacedPieces) {
+        for(char piece : unplacedPieces){
             String shape;
-            for (int column = 0; column < 8; column++) {
-                for (int r = 0; r < 5; r++) {
-                    for (int orientation = 0; orientation < 4; orientation++) {
+            for(int column = 0; column<8; column++){
+                for(int r = 0; r <5; r++){
+                    for(int orientation = 0; orientation < 4; orientation++){
                         shape = piece + String.valueOf(column) + String.valueOf(r) + String.valueOf(orientation);
 
-                        if (isPlacementOnBoard(shape)) {
+                        if(isPlacementOnBoard(shape)){
                             updateStates(shape); //update the board states only if a placement is on the board
-                            if (boardStates[row][col] != null) { //check if after updating the board with a placement, it's covering the cell
-                                if (placementConsistentWithChallenge(shape, challenge)) { //check if the placement is consistent with the challenge
-                                    if (isPlacementStringValid(placement + shape)) {
+                            if(boardStates[row][col] != null){ //check if after updating the board with a placement, it's covering the cell
+                                if(placementConsistentWithChallenge(shape,challenge)){ //check if the placement is consistent with the challenge
+                                    if(isPlacementStringValid(placement + shape)){
                                         validPieces.add(shape);
                                     }
                                 }
@@ -188,29 +187,28 @@ public class FocusGame {
             }
         }
 
-        if (validPieces.size() == 0) {
+        if(validPieces.size() == 0){
             return null;
         }
 
         return validPieces;
     }
 
-    /**
-     * Generates a list of unplaced shapes given a placement string
+    /**Generates a list of unplaced shapes given a placement string
      *
      * @param placement
      * @return all unplaced shapes in a set
      */
     //Written by Mithun Comar, rewritten as a helper function for Task 6 by Joanne Louie
-    public static Set<Character> getUnplacedPieces(String placement) {
+    public static Set<Character> getUnplacedPieces(String placement){
         Set<Character> placementPieces = new HashSet<>();
 
-        for (int i = 0; i < placement.length(); i += 4) {
+        for(int i = 0; i < placement.length(); i+=4){
             placementPieces.add(placement.charAt(i));
         }
 
         Set<Character> unplacedPieces = new HashSet<>(Arrays.asList('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j'));
-        for (char piece : placementPieces) {
+        for(char piece : placementPieces){
             unplacedPieces.remove(piece);
         }
         return unplacedPieces;
@@ -222,9 +220,7 @@ public class FocusGame {
      * or returns false if the placement is inconsistent with the challenge
      */
 
-    public static boolean placementConsistentWithChallenge(String placement, String challenge) {
-        String[] placements = placement.split("(?<=\\G.{" + 4 + "})");
-
+    public static boolean placementConsistentWithChallenge(String placement, String challenge){
         State[][] boardWithChallenge = new State[5][9];
 
         //Encodes the challenge into the appropriate locations of the board
@@ -238,67 +234,61 @@ public class FocusGame {
         boardWithChallenge[3][4] = stateFromCharacter(challenge.charAt(7));
         boardWithChallenge[3][5] = stateFromCharacter(challenge.charAt(8));
 
-        if (placement.length() == 4) {
-            updateStates(placement);
-        } else {
-            for (String shape : placements) {
-                updateStates(shape);
-            }
-        }
+        updateStates(placement);
 
         //Checks if a piece is consistent with a challenge if it has covered a challenge cell
-        if (boardStates[1][3] != null) {
-            if (characterFromState(boardStates[1][3]) != challenge.charAt(0)) {
+        if(boardStates[1][3]!=null){
+            if(characterFromState(boardStates[1][3]) != challenge.charAt(0)){
                 return false;
             }
         }
 
-        if (boardStates[1][4] != null) {
-            if (characterFromState(boardStates[1][4]) != challenge.charAt(1)) {
+        if(boardStates[1][4]!=null){
+            if(characterFromState(boardStates[1][4]) != challenge.charAt(1)){
                 return false;
             }
         }
 
-        if (boardStates[1][5] != null) {
-            if (characterFromState(boardStates[1][5]) != challenge.charAt(2)) {
+        if(boardStates[1][5]!=null){
+            if(characterFromState(boardStates[1][5]) != challenge.charAt(2)){
                 return false;
             }
         }
 
-        if (boardStates[2][3] != null) {
-            if (characterFromState(boardStates[2][3]) != challenge.charAt(3)) {
+        if(boardStates[2][3]!=null){
+            if(characterFromState(boardStates[2][3]) != challenge.charAt(3)){
                 return false;
             }
         }
 
-        if (boardStates[2][4] != null) {
-            if (characterFromState(boardStates[2][4]) != challenge.charAt(4)) {
+        if(boardStates[2][4]!=null){
+            if(characterFromState(boardStates[2][4]) != challenge.charAt(4)){
+                return false;
+            } 
+        }
+
+        if(boardStates[2][5] != null){
+            if(characterFromState(boardStates[2][5]) != challenge.charAt(5)){
                 return false;
             }
         }
 
-        if (boardStates[2][5] != null) {
-            if (characterFromState(boardStates[2][5]) != challenge.charAt(5)) {
+        if(boardStates[3][3]!=null){
+            if(characterFromState(boardStates[3][3]) != challenge.charAt(6)){
                 return false;
             }
         }
 
-        if (boardStates[3][3] != null) {
-            if (characterFromState(boardStates[3][3]) != challenge.charAt(6)) {
+        if(boardStates[3][4]!=null){
+            if(characterFromState(boardStates[3][4]) != challenge.charAt(7)){
                 return false;
             }
         }
-
-        if (boardStates[3][4] != null) {
-            if (characterFromState(boardStates[3][4]) != challenge.charAt(7)) {
-                return false;
+        if(boardStates[3][5] != null){
+                if(characterFromState(boardStates[3][5]) != challenge.charAt(8)){
+                    return false;
+                }
             }
-        }
-        if (boardStates[3][5] != null) {
-            if (characterFromState(boardStates[3][5]) != challenge.charAt(8)) {
-                return false;
-            }
-        }
 
         boardStates = new State[5][9];
         return true;
@@ -337,9 +327,9 @@ public class FocusGame {
 
     /**
      * Return the canonical encoding of the solution to a particular challenge.
-     * <p>
+     *
      * A given challenge can only solved with a single placement of pieces.
-     * <p>
+     *
      * Since some piece placements can be described two ways (due to symmetry),
      * you need to use a canonical encoding of the placement, which means you
      * must:

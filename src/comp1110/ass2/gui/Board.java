@@ -1,8 +1,4 @@
 package comp1110.ass2.gui;
-
-import comp1110.ass2.FocusGame;
-import comp1110.ass2.Orientation;
-import javafx.animation.FadeTransition;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -11,13 +7,9 @@ import javafx.scene.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
-import javafx.scene.control.TextField;
-import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
-import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
 
@@ -160,6 +152,7 @@ public class Board extends Application {
 
 
     // FIXME Task 7: Implement a basic playable Focus Game in JavaFX that only allows pieces to be placed in valid places
+    // Written by Benjamin Samuel
 
 
     private static final int BOARD_WIDTH = 720;
@@ -467,7 +460,7 @@ public class Board extends Application {
     // FIXME Task 8: Implement challenges (you may use challenges and assets provided for you in comp1110.ass2.gui.assets: sq-b.png, sq-g.png, sq-r.png & sq-w.png)
 
     ImageView[] makeChallenge(String Challenge) { // This block displays the challenge to be implemented for the game.
-
+        // Written by Mithun Comar
         String input = null;
         ImageView[] challengeArray = new ImageView[9];
         char[] clg = Challenge.toCharArray();
@@ -536,12 +529,12 @@ public class Board extends Application {
         return challengeArray;
     }
 
-    // end of task 8
+    // Written by Benjamin Samuel
     private void restartGame() {
         try {
             Random rand = new Random();
-            int i = rand.nextInt((int) challenge.length / 3);
-            String Challenge = challenge[i + ((int) difficulty.getValue() - 1) * 40];
+            int i = rand.nextInt((int) challenge.length / 4);
+            String Challenge = challenge[i + ((int) difficulty.getValue() - 1) * 30];
             root.getChildren().clear();
 
             generateBoard();
@@ -644,7 +637,7 @@ public class Board extends Application {
         });
         controls.getChildren().add(button);
         difficulty.setMin(1);
-        difficulty.setMax(3);
+        difficulty.setMax(4);
         difficulty.setValue(0);
         difficulty.setShowTickLabels(true);
         difficulty.setShowTickMarks(true);
